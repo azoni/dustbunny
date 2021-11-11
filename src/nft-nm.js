@@ -200,7 +200,7 @@ async function main(){
     var offset = 0
     await new Promise(resolve => setTimeout(resolve, 3000));
     for(var i = startToken.value; i <= endToken.value; i++){
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 500))
     var bidMade = 0
     if(Object.keys(offersDict).length > 0){
           try{
@@ -342,7 +342,7 @@ async function main1(){
     text1.innerHTML = 'Starting.....'
     var offset1 = 0
     for(var i = endToken1.value; i >= startToken1.value; i--){
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise(resolve => setTimeout(resolve, 500))
           var bidMade = 0
         if(Object.keys(offersDict).length > 0){
           try{
