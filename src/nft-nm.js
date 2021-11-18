@@ -130,7 +130,7 @@ async function placeBid(){
   progressBar.hidden = false
 
   for(key in Object.keys(eventDict)){
-    //await new Promise(resolve => setTimeout(resolve, delay.value))
+    await new Promise(resolve => setTimeout(resolve, 3000))
 
     var asset = {
       tokenId: Object.keys(eventDict)[key],
@@ -189,42 +189,6 @@ async function placeBid(){
   update_floor()
 
 }
-
-var Web3 = require('web3');
-var Eth = require('web3-eth');
-const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY)
-var eth = new Eth(provider)
-
-let tokenAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-let minABI = [
-  // balanceOf
-  {
-    "constant":true,
-    "inputs":[{"name":"_owner","type":"address"}],
-    "name":"balanceOf",
-    "outputs":[{"name":"balance","type":"uint256"}],
-    "type":"function"
-  },
-  // decimals
-  {
-    "constant":true,
-    "inputs":[],
-    "name":"decimals",
-    "outputs":[{"name":"","type":"uint8"}],
-    "type":"function"
-  }
-];
-
-let contract = new eth.Contract(minABI,tokenAddress);
-async function getBalance(walletAddress) {
-  var balance = await contract.methods.balanceOf(walletAddress).call();
-  return balance;
-}
-//['collection']['stats']['floor_price']
-document.getElementById('update_floor').addEventListener('click', function(){
-  console.log((total_weth/1000000000000000000).toFixed(4))
-  update_floor()
-})
 function update_floor(){
   if(COLLECTION_NAME !== ''){
     getFloorPrice().then(function (collect){
@@ -239,74 +203,124 @@ function update_floor(){
   } else {
     console.log('No Collection selected.')
   }
-  getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
-  document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
-  });
-  getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-      document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
-  });
-  eth.getBalance(values.default.OWNER_ADDRESS[0].address)
-  .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
-  eth.getBalance(values.default.OWNER_ADDRESS[1].address)
-  .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 }
+// var Web3 = require('web3');
+// var Eth = require('web3-eth');
+// const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY)
+// var eth = new Eth(provider)
 
-getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
-    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
+// let tokenAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+// let minABI = [
+//   // balanceOf
+//   {
+//     "constant":true,
+//     "inputs":[{"name":"_owner","type":"address"}],
+//     "name":"balanceOf",
+//     "outputs":[{"name":"balance","type":"uint256"}],
+//     "type":"function"
+//   },
+//   // decimals
+//   {
+//     "constant":true,
+//     "inputs":[],
+//     "name":"decimals",
+//     "outputs":[{"name":"","type":"uint8"}],
+//     "type":"function"
+//   }
+// ];
 
-});
-getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-    document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
-});
+// let contract = new eth.Contract(minABI,tokenAddress);
+// async function getBalance(walletAddress) {
+//   var balance = await contract.methods.balanceOf(walletAddress).call();
+//   return balance;
+// }
+// //['collection']['stats']['floor_price']
+// document.getElementById('update_floor').addEventListener('click', function(){
+//   console.log((total_weth/1000000000000000000).toFixed(4))
+//   update_floor()
+// })
+// function update_floor(){
+//   if(COLLECTION_NAME !== ''){
+//     getFloorPrice().then(function (collect){
+//       try{
+//       document.getElementById('collectionName').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
+//       console.log('Floor updated: ' + collect['collection']['stats']['floor_price'])
+//     } catch(ex){
+//       console.log(ex.message)
+//     }
+//     })
 
-eth.getBalance(values.default.OWNER_ADDRESS[0].address)
-.then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
-eth.getBalance(values.default.OWNER_ADDRESS[1].address)
-.then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+//   } else {
+//     console.log('No Collection selected.')
+//   }
+//   getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
+//   document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
+//   });
+//   getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
+//       document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
+//   });
+//   eth.getBalance(values.default.OWNER_ADDRESS[0].address)
+//   .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+//   eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+//   .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+// }
 
-var total_weth = 0
+// getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
+//     document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
 
-if(values.default.OWNER_ADDRESS[0].username==='Sad002d'){
-getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(function (result) {
-    console.log('DustBunny: ' + (result/1000000000000000000).toFixed(4))
-    total_weth += parseInt(result)
-});
-getBalance('0x4beac303c8fdf1f3cd34509b344067e86dcbc506').then(function (result) {
-    console.log('balloonanimal: ' + (result/1000000000000000000).toFixed(4))
-    total_weth += parseInt(result)
-});
-getBalance('0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65').then(function (result) {
-    console.log('cakebatter: ' + (result/1000000000000000000).toFixed(4))
-    total_weth += parseInt(result)
-});
-getBalance('0x60bf609e0e8b724dc61ffee24737af15a6f6d905').then(function (result) {
-    console.log('doughnuthole: ' + (result/1000000000000000000).toFixed(4))
-    total_weth += parseInt(result)
-});
-getBalance('0x774a4a3c3130e4850a84dc8c80945dee4de2e017').then(function (result) {
-    console.log('DE2E017: ' + (result/1000000000000000000).toFixed(4))
-    total_weth += parseInt(result)
-});
-getBalance('0x1484d9ae6d590d6b0981e802f555a8dd74b93017').then(function (result) {
-    console.log('T74b93017: ' + (result/1000000000000000000).toFixed(4))
-    total_weth += parseInt(result)
-});
-getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(function (result) {
-    console.log('Sad002d: ' + (result/1000000000000000000).toFixed(4))
-    total_weth += parseInt(result)
-});
-getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(function (result) {
-    console.log('Ti801703: ' + (result/1000000000000000000).toFixed(4))
-    total_weth += parseInt(result)
-});
-getBalance('0xd76654102c5f3c27886d5b3ec47b3111e18d8126').then(function (result) {
-    console.log('nftd00d: ' + (result/1000000000000000000).toFixed(4))
-    total_weth += parseInt(result)
-});
-//
-// Flags for threads, total offers attempted.
-//
-}
+// });
+// getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
+//     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
+// });
+
+// eth.getBalance(values.default.OWNER_ADDRESS[0].address)
+// .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+// eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+// .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+
+// var total_weth = 0
+
+// if(values.default.OWNER_ADDRESS[0].username==='nftd00d'){
+// getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(function (result) {
+//     console.log('DustBunny: ' + (result/1000000000000000000).toFixed(4))
+//     total_weth += parseInt(result)
+// });
+// getBalance('0x4beac303c8fdf1f3cd34509b344067e86dcbc506').then(function (result) {
+//     console.log('balloonanimal: ' + (result/1000000000000000000).toFixed(4))
+//     total_weth += parseInt(result)
+// });
+// getBalance('0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65').then(function (result) {
+//     console.log('cakebatter: ' + (result/1000000000000000000).toFixed(4))
+//     total_weth += parseInt(result)
+// });
+// getBalance('0x60bf609e0e8b724dc61ffee24737af15a6f6d905').then(function (result) {
+//     console.log('doughnuthole: ' + (result/1000000000000000000).toFixed(4))
+//     total_weth += parseInt(result)
+// });
+// getBalance('0x774a4a3c3130e4850a84dc8c80945dee4de2e017').then(function (result) {
+//     console.log('DE2E017: ' + (result/1000000000000000000).toFixed(4))
+//     total_weth += parseInt(result)
+// });
+// getBalance('0x1484d9ae6d590d6b0981e802f555a8dd74b93017').then(function (result) {
+//     console.log('T74b93017: ' + (result/1000000000000000000).toFixed(4))
+//     total_weth += parseInt(result)
+// });
+// getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(function (result) {
+//     console.log('Sad002d: ' + (result/1000000000000000000).toFixed(4))
+//     total_weth += parseInt(result)
+// });
+// getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(function (result) {
+//     console.log('Ti801703: ' + (result/1000000000000000000).toFixed(4))
+//     total_weth += parseInt(result)
+// });
+// getBalance('0xd76654102c5f3c27886d5b3ec47b3111e18d8126').then(function (result) {
+//     console.log('nftd00d: ' + (result/1000000000000000000).toFixed(4))
+//     total_weth += parseInt(result)
+// });
+// //
+// // Flags for threads, total offers attempted.
+// //
+// }
 var thread1done = 0
 var thread2done = 0
 var offers = 0
@@ -323,7 +337,6 @@ var endToken = document.getElementById('endToken')
 var endToken1 = document.getElementById('endToken1')
 
 var text = document.getElementById('text')
-var text1 = document.getElementById('text1')
 
 const collectionButton = document.getElementById('collectionButton')
 const collectionInput = document.getElementById('collectionInput')
@@ -334,7 +347,7 @@ var confirmCollection = 0
 var progressBar = document.getElementById('progressBar')
 
 var delay = document.getElementById('delay')
-delay.value = 500
+delay.value = 3000
 
 document.getElementById('addDelay').addEventListener('click', function(){
   delay.value = parseInt(delay.value) + 100
@@ -425,7 +438,6 @@ async function getCollection(collectionName){
       // collection.innerHTML = collectionName + " don't exist." + NFT_CONTRACT_ADDRESS
       confirmCollection = 0
     }
-    startButton.disabled = true
     quickButton.disabled = true
     increaseBid.disabled = true
     increaseBid1.disabled = true
@@ -437,7 +449,6 @@ async function getCollection(collectionName){
 collectionButtonClear.addEventListener('click', function(){
     COLLECTION_NAME = ''
     confirmCollection = 0
-    startButton.disabled = true
     quickButton.disabled = true
     document.getElementById('collectionName').innerHTML = 'Collection'
     // collection.innerHTML = 'Collection Address:'
@@ -473,6 +484,14 @@ async function main(){
     text.style.fontSize = '20px'
     text.innerHTML = 'Starting.....'
     var offset = 0
+    var prop1 = ''
+    var trait1 = ''
+    var bid1 = 0
+    if(Object.keys(offersDict).length > 0){
+      prop1 = offersDict[Object.keys(offersDict)[0]][0]
+      trait1 = offersDict[Object.keys(offersDict)[0]][1]
+      bid1 = offersDict[Object.keys(offersDict)[0]][2]
+    }
     await new Promise(resolve => setTimeout(resolve, 3000));
     for(var i = startToken.value; i <= endToken.value; i++){
     if(stop === 1){
@@ -481,15 +500,15 @@ async function main(){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var bidMade = 0
     if(Object.keys(offersDict).length > 0){
+          delay.value = 1500
           try{
               const asset = await seaport.api.getAsset({
               tokenAddress: NFT_CONTRACT_ADDRESS,
               tokenId: i,
               })
             for(var trait in asset['traits']){
-              console.log(offersDict[Object.keys(offersDict)[trait]])
-              if (asset['traits'][trait]['trait_type'].toLowerCase().includes('1111')){
-                if(asset['traits'][trait]['value'].toLowerCase().includes('2222')){
+              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(prop1)){
+                if(asset['traits'][trait]['value'].toLowerCase().includes(trait1)){
                   try{
                     //console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i)
                     await seaport.createBuyOrder({
@@ -497,12 +516,12 @@ async function main(){
                         tokenId: i,
                         tokenAddress: NFT_CONTRACT_ADDRESS
                     },
-                    startAmount: offersDict[Object.keys(offersDict)[trait]][2],
+                    startAmount: bid1,
                     accountAddress: OWNER_ADDRESS,
                     expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
                     })
                     text.style.color = 'black'
-                    text.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i
+                    text.innerHTML = asset['traits'][trait]['value'] + ': ' + 2 + " on #" + i
                     offers += 1
                     //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
                 } catch(ex) {
@@ -524,12 +543,13 @@ async function main(){
                     }               
                     console.log('**FAILED**! #' + i)
                 }
+                await new Promise(resolve => setTimeout(resolve, delay.value))
                 offset = 0
                 progressBar.value += 1
                 offersMade.innerHTML = offers + '/' + progressBar.max
                 bidMade = 1
                 } else {
-                  await new Promise(resolve => setTimeout(resolve, 1000))
+                  await new Promise(resolve => setTimeout(resolve, delay.value))
                   break
                 }
               }
@@ -547,6 +567,7 @@ async function main(){
         startToken.value = i
 
         if(maxOfferAmount !== 0){
+          delay.value = 1500
           try{
             //const order = await seaport.api.getOrders({
             const order = await seaport.api.getOrders({
@@ -562,17 +583,7 @@ async function main(){
             if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
               offset = .001 + parseFloat(topBid - offerAmount)
             }
-            // if(order['orders'][0].makerAccount.user.username === myAccount.innerHTML || parseFloat(topBid) > parseFloat(maxOfferAmount)){
-            //   offset = 0
-            //   progressBar.value += 1
-            //   offersMade.innerHTML = offers + '/' + progressBar.max 
-            //   console.log('skipping ' + i)
 
-            //   await new Promise(resolve => setTimeout(resolve, 600))
-            //   offers += 1
-            //   continue
-            // }
-            // console.log(order)
             console.log('top bid: ' + topBid + ' #' + i)
           }
           catch(ex){
@@ -645,183 +656,7 @@ function check_errors(msg){
   return 0
 }
 
-async function main1(){
-    text1.style.fontSize = '20px'
-    text1.innerHTML = 'Starting.....'
-    var offset1 = 0
-
-    for(var i = endToken1.value; i >= startToken1.value; i--){
-        if(stop2 === 1){
-          break
-        }
-        await new Promise(resolve => setTimeout(resolve, delay.value))
-          var bidMade = 0
-        if(Object.keys(offersDict).length > 0){
-          try{
-              const asset = await seaport.api.getAsset({
-              tokenAddress: NFT_CONTRACT_ADDRESS,
-              tokenId: i,
-              })
-            for(var trait in asset['traits']){
-              console.log(offersDict[Object.keys(offersDict)[trait]])
-              console.log(offersDict[Object.keys(offersDict)[trait]][0])
-              if (asset['traits'][trait]['trait_type'].toLowerCase().includes(offersDict[Object.keys(offersDict)[trait]][0])){
-                if(asset['traits'][trait]['value'].toLowerCase().includes(offersDict[Object.keys(offersDict)[trait]][1])){
-                  try{
-                    console.log(asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i)
-                    await seaport.createBuyOrder({
-                    asset: {
-                        tokenId: i,
-                        tokenAddress: NFT_CONTRACT_ADDRESS
-                    },
-                    startAmount: offersDict[Object.keys(offersDict)][trait][2],
-                    accountAddress: OWNER_ADDRESS,
-                    expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
-                    })
-                    text1.style.color = 'black'
-                    text1.innerHTML = asset['traits'][trait]['value'] + ': ' + offersDict[Object.keys(offersDict)[trait]][2] + " on #" + i
-                    offers += 1
-                    //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
-                } catch(ex) {
-                    var error_message = check_errors(ex.message)
-                    text1.style.color = 'red'
-                    text1.innerHTML = 'Error......'
-                    text1.innerHTML = error_message
-                    // if(ex.message.includes('Insufficient balance.')){
-                    //   text1.innerHTML = 'Insufficient balance. Please wrap more ETH.'
-                    //   //alert('Insufficient balance. Please wrap more ETH.')
-                    //   await new Promise(resolve => setTimeout(resolve, 60000))
-                    // }
-                    // else if(ex.message.includes('This order does not have a valid bid price for the auction')){
-                    //   text1.innerHTML = 'Auction'
-                    // }
-                    // else if(ex.message.includes('API Error 404: Not found.')){
-                    //   text1.innerHTML = 'Asset not found.'
-                    // } else if(ex.message.includes('Trading is not enabled for')){
-                    //   text1.innerHTML = 'Trading no enalbed on asset.'
-                    // } 
-                    // else {
-                    //   await new Promise(resolve => setTimeout(resolve, 60000))
-                    // }     
-                    if(error_message === 0){
-                      beep();
-                      await new Promise(resolve => setTimeout(resolve, 60000))
-                    }
-                    else if(error_message === 'Insufficient balance. Please wrap more ETH.')
-                    {
-                      await new Promise(resolve => setTimeout(resolve, 300000))
-                    }
-                     else {
-                      text1.innerHTML = error_message
-                    }               
-                    console.log('**FAILED**! #' + i)
-                }
-                offset1 = 0
-                progressBar.value += 1
-                //offersMade.innerHTML = offers + '/' + progressBar.max
-                bidMade = 1
-                } else {
-                  await new Promise(resolve => setTimeout(resolve, 1000))
-                  break
-                }
-              }
-            }
-          } catch(ex) {
-            console.log(ex)
-            console.log('Error with asset.')
-          }
-          // allow user to decide to just bid on traits or all + traits
-          if (bidMade === 1) {
-            continue
-          }
-        }
-        endToken1.value = i
-
-        if(maxOfferAmount !== 0){
-          try{
-            const order = await seaport.api.getOrders({
-              asset_contract_address: NFT_CONTRACT_ADDRESS,
-              token_id: i,
-              side: 0,
-              order_by: 'eth_price',
-              order_direction: 'desc'
-            })
-          const topBid1 = order['orders'][0].basePrice / 1000000000000000000
-          if(parseFloat(topBid1) < parseFloat(maxOfferAmount) && parseFloat(topBid1) >= parseFloat(offerAmount)){
-            offset1 = .001 + parseFloat(topBid1 - offerAmount)
-          }
-          // if(order['orders'][0].makerAccount.user.username === myAccount.innerHTML || parseFloat(topBid1) > parseFloat(maxOfferAmount)){
-          //   offset1 = 0
-          //   progressBar.value += 1
-          //   offersMade.innerHTML = offers + '/' + progressBar.max 
-          //   console.log('skipping ' + i)
-
-          //   await new Promise(resolve => setTimeout(resolve, 600))
-          //   offers += 1
-          //   continue
-          // }
-          // console.log(order)
-          console.log('top bid: ' + topBid1 + ' #' + i)
-            }//order['orders'][0].makerAccount.user.username + 
-            catch(ex){
-              await new Promise(resolve => setTimeout(resolve, 5000))
-              console.log('Get bids for ' + i + ' failed.')
-            }
-            await new Promise(resolve => setTimeout(resolve, delay.value))
-          }
-        try{
-            console.log('bidding: ' + (parseFloat(offset1) + parseFloat(offerAmount)).toFixed(5) + " on #" + i)
-            await seaport.createBuyOrder({
-            asset: {
-                tokenId: i,
-                tokenAddress: NFT_CONTRACT_ADDRESS
-            },
-            startAmount: parseFloat(offset1) + parseFloat(offerAmount),
-            accountAddress: OWNER_ADDRESS,
-            expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
-            })
-            text1.style.color = 'black'
-            text1.innerHTML = 'bidding: ' + (parseFloat(offset1) + parseFloat(offerAmount)).toFixed(5) + " on #" + i
-            offers += 1
-            
-            //document.getElementById('offersMade').innerHTML = 'Offers made: ' + offers
-        } catch(ex) {
-            text1.style.color = 'red'
-            text1.innerHTML = 'Error......'
-            if(ex.message.includes('Insufficient balance.')){
-              text1.innerHTML = 'Insufficient balance. Please wrap more ETH.'
-              //alert('Insufficient balance. Please wrap more ETH.')
-            }
-            if(ex.message.includes('API Error 404: Not found.')){
-              text1.innerHTML = 'Asset not found.'
-              //alert('Insufficient balance. Please wrap more ETH.')
-            } else {
-              await new Promise(resolve => setTimeout(resolve, 60000))
-            }
-            console.log(ex.message)
-            console.log('**FAILED**! #' + i)
-            
-            
-        }
-        offset1 = 0
-        progressBar.value +=1
-        //offersMade.innerHTML = offers + '/' + progressBar.max 
-    }
-    text1.style.color = 'purple'
-    if (startToken1.value === endToken1.value){
-      text1.innerHTML = 'COMPLETE'
-    }
-    thread2done = 1
-    if (thread1done + thread2done  === 2){
-      beep();
-      console.log('thread2 done')
-      pause()
-      document.getElementById('body').style.background = '#D9B3FF'
-    }
-}
-
 ////////////////////////////////////////////////
-const startButton = document.getElementById('startButton')
 // const stopButton = document.getElementById('stopButton')
 const resetButton = document.getElementById('reset')
 const confirmButton = document.getElementById('confirmButton')
@@ -829,7 +664,6 @@ const quickButton = document.getElementById('quickStart')
 // const apply = document.getElementById('apply')
 
 quickButton.disabled = true
-startButton.disabled = true
 increaseBid.disabled = true
 increaseBid1.disabled = true
 // buttona.disabled = true
@@ -838,7 +672,6 @@ increaseBid1.disabled = true
 //     startButton.disabled = true
 //     quickButton.disabled = true
 //     text.innerHTML = ''
-//     text1.innerHTML = ''
 //     document.getElementById('assetCount').value = ''
 //     startToken.value = ''
 //     endToken.value = ''
@@ -868,12 +701,10 @@ quickButton.addEventListener('click', function(){
   var assetCount = document.getElementById('assetCount').value
   document.getElementById('body').style.background = '#90EE90'
   thread1done = 0
-  thread2done = 0
   start()
   progressBar.value =  0
   offers = 0
   quickButton.disabled = true
-  startButton.disabled = true
   progressBar.hidden = false
   increaseBid.disabled = false
   increaseBid1.disabled = false
@@ -882,38 +713,14 @@ quickButton.addEventListener('click', function(){
     assetCount -= 1
     console.log('busted')
   }
-  console.log(assetCount)
-  const section = Math.floor((assetCount-startAt) / 2)
   startToken.value = startAt
-  const end = section + parseInt(startAt)
-  endToken.value = end 
-  startToken1.value = end + 1
+  endToken.value = assetCount 
 
-  endToken1.value = assetCount
   progressBar.max = assetCount - startAt
   main()
-  main1()
 })
 
-startButton.addEventListener('click', function(){
-  document.getElementById('body').style.background = '#90EE90'
-  thread1done = 0
-  thread2done = 0
-  progressBar.value = 0
-  start()
-  increaseBid.disabled = false
-  increaseBid1.disabled = false
-  progressBar.hidden = false
-  progressBar.max = parseInt(endToken.value - startToken.value) + parseInt(endToken1.value - startToken1.value)
-  quickButton.disabled = true
-  startButton.disabled = true
-  main()
-  if(startToken1.value !== ''){
-    main1()
-  } else {
-    thread2done = 1
-  }
-})
+
 
 resetButton.addEventListener('click', function(){ 
   reset()
@@ -925,11 +732,9 @@ resetButton.addEventListener('click', function(){
   offerAmount = 0
   expirationHours = 0
   text.innerHTML = ''
-  text1.innerHTML = ''
   increaseBid.disabled = true
   increaseBid1.disabled = true
   quickButton.disabled = true
-  startButton.disabled = true
   progressBar.hidden = true
   offersMade.innerHTML = ''
 
@@ -977,7 +782,6 @@ confirmButton.addEventListener('click', function(){
       alert('No bid entered.')
       return
     }
-    startButton.disabled = false
     quickButton.disabled = false
     alert(offerAmount + ' min ' + maxOfferAmount + ' max Bid for : ' + COLLECTION_NAME + " " + expirationHours + " hour expiration.")
 

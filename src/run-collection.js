@@ -57,7 +57,6 @@ var increaseBid1 = document.getElementById('increaseBid1-2')
 
 
 var text = document.getElementById('text-2')
-var text1 = document.getElementById('text1-2')
 
 const collectionButton = document.getElementById('collectionButton-2')
 const collectionInput = document.getElementById('collectionInput-2')
@@ -233,18 +232,19 @@ async function getCollectionDetails(collectionName){
   }  
 }
 
+async function sleep(delay) {
+    // console.log(delay)
+    await new Promise(resolve => setTimeout(resolve, delay));
+}
 
 function run(){
   text.style.fontSize = '20px'
   text.innerHTML = 'Starting.....'
-  text1.style.fontSize = '20px'
-  text1.innerHTML = 'Starting.....'
   for(var offset = 0; offset < assetCount; offset+=50){
     var collection = getCollectionAssets(COLLECTION_NAME, offset)
     collection.then(function(collection){
       console.log(collection)
       try{
-
       for(var asset in collection['assets']){
         if(document.getElementById('addProperty-2').value !== ''){
           for(var trait in collection['assets'][asset]['traits']){
@@ -283,12 +283,24 @@ function run(){
   reset()
   start()
   placeBid()
-  placeBid2()
+  //placeBid2()
 
 }
 async function getCollectionAssets(collectionName, offset){
   try {
     collectionName = collectionName.trim()
+    if (offset > 8000) {
+      sleep(8000)
+    }
+    else if (offset > 6000) {
+      sleep(6000)
+    }
+    else if (offset > 4000) {
+      sleep(4000)
+    }
+    else if (offset > 2000) {
+      sleep(2000)
+    }
     var collect = await seaport.api.getAssets({
       'collection': collectionName,
       'offset': offset,
@@ -296,13 +308,14 @@ async function getCollectionAssets(collectionName, offset){
       
     })
     return collect
+
   } catch(ex){
       console.log("couldn't get collection")
   }
 }
 async function placeBid(){
   await new Promise(resolve => setTimeout(resolve, 3000))
-  for(var i = 0; i <= Math.floor(assetCount/2); i++){
+  for(var i = 0; i <= Math.floor(assetCount); i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
     if(maxOfferAmount !== 0){
@@ -360,64 +373,64 @@ async function placeBid(){
   }
   pause()
 }
-async function placeBid2(){
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  for(var i = Math.floor(assetCount/2); i <= assetCount; i++){
-    await new Promise(resolve => setTimeout(resolve, delay.value))
-    var offset = 0
-    if(maxOfferAmount !== 0){
-      try{
-        const order = await seaport.api.getOrders({
-          asset_contract_address: NFT_CONTRACT_ADDRESS,
-          token_id: tokenId_array[i],
-          side: 0,
-          order_by: 'eth_price',
-          order_direction: 'desc'
-        })
-        const topBid = order['orders'][0].basePrice / 1000000000000000000
+// async function placeBid2(){
+//   await new Promise(resolve => setTimeout(resolve, 1000))
+//   for(var i = Math.floor(assetCount/2); i <= assetCount; i++){
+//     await new Promise(resolve => setTimeout(resolve, delay.value))
+//     var offset = 0
+//     if(maxOfferAmount !== 0){
+//       try{
+//         const order = await seaport.api.getOrders({
+//           asset_contract_address: NFT_CONTRACT_ADDRESS,
+//           token_id: tokenId_array[i],
+//           side: 0,
+//           order_by: 'eth_price',
+//           order_direction: 'desc'
+//         })
+//         const topBid = order['orders'][0].basePrice / 1000000000000000000
 
-        if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
-          offset = .001 + parseFloat(topBid - offerAmount)
-        }
+//         if(parseFloat(topBid) < parseFloat(maxOfferAmount) && parseFloat(topBid) >= parseFloat(offerAmount)){
+//           offset = .001 + parseFloat(topBid - offerAmount)
+//         }
 
-        console.log('top bid: ' + topBid + ' #' + name_array[i])
-      }
-      catch(ex){
-        console.log(ex.message)
-        console.log('Get bids for ' + name_array[i] + ' failed.')
-      }
-    }
-    var asset = {
-        tokenId: tokenId_array[i],
-        tokenAddress: NFT_CONTRACT_ADDRESS,
-        //schemaName: WyvernSchemaName.ERC1155
-      }
-    if (COLLECTION_NAME === 'bears-deluxe' || COLLECTION_NAME === 'guttercatgang'){
-      asset = {
-        tokenId: tokenId_array[i],
-        tokenAddress: NFT_CONTRACT_ADDRESS,
-        schemaName: WyvernSchemaName.ERC1155
-      }      
-    }
-    try{
-        await seaport.createBuyOrder({
-      asset,
-      startAmount: parseFloat(offset) + parseFloat(offerAmount),
-      accountAddress: OWNER_ADDRESS,
-      expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
-      })
-      console.log('Success #' + name_array[i])
-      text1.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
-    } catch(ex){
-      console.log(ex)
-      console.log('**FAILED**! #' + name_array[i])
-      await new Promise(resolve => setTimeout(resolve, 60000))
-    }
-    offers+=1
-    progressBar.value += 1
-  }
-  pause()
-}
+//         console.log('top bid: ' + topBid + ' #' + name_array[i])
+//       }
+//       catch(ex){
+//         console.log(ex.message)
+//         console.log('Get bids for ' + name_array[i] + ' failed.')
+//       }
+//     }
+//     var asset = {
+//         tokenId: tokenId_array[i],
+//         tokenAddress: NFT_CONTRACT_ADDRESS,
+//         //schemaName: WyvernSchemaName.ERC1155
+//       }
+//     if (COLLECTION_NAME === 'bears-deluxe' || COLLECTION_NAME === 'guttercatgang'){
+//       asset = {
+//         tokenId: tokenId_array[i],
+//         tokenAddress: NFT_CONTRACT_ADDRESS,
+//         schemaName: WyvernSchemaName.ERC1155
+//       }      
+//     }
+//     try{
+//         await seaport.createBuyOrder({
+//       asset,
+//       startAmount: parseFloat(offset) + parseFloat(offerAmount),
+//       accountAddress: OWNER_ADDRESS,
+//       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expirationHours),
+//       })
+//       console.log('Success #' + name_array[i])
+//       text1.innerHTML = 'bidding: ' + (parseFloat(offset) + parseFloat(offerAmount)).toFixed(4) + " on " + name_array[i]
+//     } catch(ex){
+//       console.log(ex)
+//       console.log('**FAILED**! #' + name_array[i])
+//       await new Promise(resolve => setTimeout(resolve, 60000))
+//     }
+//     offers+=1
+//     progressBar.value += 1
+//   }
+//   pause()
+// }
 // Convert time to a format of hours, minutes, seconds, and milliseconds
 
 function timeToString(time) {
