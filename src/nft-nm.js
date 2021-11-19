@@ -473,10 +473,14 @@ async function main(){
     var prop1 = ''
     var trait1 = ''
     var bid1 = 0
+    if(maxOfferAmount !== 0){
+          delay.value = 1500
+        }
     if(Object.keys(offersDict).length > 0){
       prop1 = offersDict[Object.keys(offersDict)[0]][0]
       trait1 = offersDict[Object.keys(offersDict)[0]][1]
       bid1 = offersDict[Object.keys(offersDict)[0]][2]
+      delay.value = 1500
     }
     await new Promise(resolve => setTimeout(resolve, 3000));
     for(var i = startToken.value; i <= endToken.value; i++){
@@ -486,7 +490,7 @@ async function main(){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var bidMade = 0
     if(Object.keys(offersDict).length > 0){
-          delay.value = 1500
+          
           try{
               const asset = await seaport.api.getAsset({
               tokenAddress: NFT_CONTRACT_ADDRESS,
@@ -553,7 +557,6 @@ async function main(){
         startToken.value = i
 
         if(maxOfferAmount !== 0){
-          delay.value = 1500
           try{
             //const order = await seaport.api.getOrders({
             const order = await seaport.api.getOrders({
