@@ -189,6 +189,42 @@ async function placeBid(){
   update_floor()
 
 }
+
+var Web3 = require('web3');
+var Eth = require('web3-eth');
+const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY)
+var eth = new Eth(provider)
+
+let tokenAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+let minABI = [
+  // balanceOf
+  {
+    "constant":true,
+    "inputs":[{"name":"_owner","type":"address"}],
+    "name":"balanceOf",
+    "outputs":[{"name":"balance","type":"uint256"}],
+    "type":"function"
+  },
+  // decimals
+  {
+    "constant":true,
+    "inputs":[],
+    "name":"decimals",
+    "outputs":[{"name":"","type":"uint8"}],
+    "type":"function"
+  }
+];
+
+let contract = new eth.Contract(minABI,tokenAddress);
+async function getBalance(walletAddress) {
+  var balance = await contract.methods.balanceOf(walletAddress).call();
+  return balance;
+}
+//['collection']['stats']['floor_price']
+document.getElementById('update_floor').addEventListener('click', function(){
+  console.log((total_weth/1000000000000000000).toFixed(4))
+  update_floor()
+})
 function update_floor(){
   if(COLLECTION_NAME !== ''){
     getFloorPrice().then(function (collect){
@@ -203,124 +239,74 @@ function update_floor(){
   } else {
     console.log('No Collection selected.')
   }
+  getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
+  document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
+  });
+  getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
+      document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
+  });
+  eth.getBalance(values.default.OWNER_ADDRESS[0].address)
+  .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+  eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+  .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 }
-// var Web3 = require('web3');
-// var Eth = require('web3-eth');
-// const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY)
-// var eth = new Eth(provider)
 
-// let tokenAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-// let minABI = [
-//   // balanceOf
-//   {
-//     "constant":true,
-//     "inputs":[{"name":"_owner","type":"address"}],
-//     "name":"balanceOf",
-//     "outputs":[{"name":"balance","type":"uint256"}],
-//     "type":"function"
-//   },
-//   // decimals
-//   {
-//     "constant":true,
-//     "inputs":[],
-//     "name":"decimals",
-//     "outputs":[{"name":"","type":"uint8"}],
-//     "type":"function"
-//   }
-// ];
+getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
+    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
 
-// let contract = new eth.Contract(minABI,tokenAddress);
-// async function getBalance(walletAddress) {
-//   var balance = await contract.methods.balanceOf(walletAddress).call();
-//   return balance;
-// }
-// //['collection']['stats']['floor_price']
-// document.getElementById('update_floor').addEventListener('click', function(){
-//   console.log((total_weth/1000000000000000000).toFixed(4))
-//   update_floor()
-// })
-// function update_floor(){
-//   if(COLLECTION_NAME !== ''){
-//     getFloorPrice().then(function (collect){
-//       try{
-//       document.getElementById('collectionName').innerHTML = COLLECTION_NAME + ' ' +  collect['collection']['dev_seller_fee_basis_points'] / 100 + '% Floor: ' + collect['collection']['stats']['floor_price']
-//       console.log('Floor updated: ' + collect['collection']['stats']['floor_price'])
-//     } catch(ex){
-//       console.log(ex.message)
-//     }
-//     })
+});
+getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
+    document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
+});
 
-//   } else {
-//     console.log('No Collection selected.')
-//   }
-//   getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
-//   document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
-//   });
-//   getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-//       document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
-//   });
-//   eth.getBalance(values.default.OWNER_ADDRESS[0].address)
-//   .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
-//   eth.getBalance(values.default.OWNER_ADDRESS[1].address)
-//   .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
-// }
+eth.getBalance(values.default.OWNER_ADDRESS[0].address)
+.then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
+eth.getBalance(values.default.OWNER_ADDRESS[1].address)
+.then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 
-// getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
-//     document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
+var total_weth = 0
 
-// });
-// getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-//     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
-// });
-
-// eth.getBalance(values.default.OWNER_ADDRESS[0].address)
-// .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
-// eth.getBalance(values.default.OWNER_ADDRESS[1].address)
-// .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
-
-// var total_weth = 0
-
-// if(values.default.OWNER_ADDRESS[0].username==='nftd00d'){
-// getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(function (result) {
-//     console.log('DustBunny: ' + (result/1000000000000000000).toFixed(4))
-//     total_weth += parseInt(result)
-// });
-// getBalance('0x4beac303c8fdf1f3cd34509b344067e86dcbc506').then(function (result) {
-//     console.log('balloonanimal: ' + (result/1000000000000000000).toFixed(4))
-//     total_weth += parseInt(result)
-// });
-// getBalance('0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65').then(function (result) {
-//     console.log('cakebatter: ' + (result/1000000000000000000).toFixed(4))
-//     total_weth += parseInt(result)
-// });
-// getBalance('0x60bf609e0e8b724dc61ffee24737af15a6f6d905').then(function (result) {
-//     console.log('doughnuthole: ' + (result/1000000000000000000).toFixed(4))
-//     total_weth += parseInt(result)
-// });
-// getBalance('0x774a4a3c3130e4850a84dc8c80945dee4de2e017').then(function (result) {
-//     console.log('DE2E017: ' + (result/1000000000000000000).toFixed(4))
-//     total_weth += parseInt(result)
-// });
-// getBalance('0x1484d9ae6d590d6b0981e802f555a8dd74b93017').then(function (result) {
-//     console.log('T74b93017: ' + (result/1000000000000000000).toFixed(4))
-//     total_weth += parseInt(result)
-// });
-// getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(function (result) {
-//     console.log('Sad002d: ' + (result/1000000000000000000).toFixed(4))
-//     total_weth += parseInt(result)
-// });
-// getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(function (result) {
-//     console.log('Ti801703: ' + (result/1000000000000000000).toFixed(4))
-//     total_weth += parseInt(result)
-// });
-// getBalance('0xd76654102c5f3c27886d5b3ec47b3111e18d8126').then(function (result) {
-//     console.log('nftd00d: ' + (result/1000000000000000000).toFixed(4))
-//     total_weth += parseInt(result)
-// });
-// //
-// // Flags for threads, total offers attempted.
-// //
-// }
+if(values.default.OWNER_ADDRESS[0].username==='nftd00d'){
+getBalance('0x13b451d77b87361d376ae211f640ed1a4491181d').then(function (result) {
+    console.log('DustBunny: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x4beac303c8fdf1f3cd34509b344067e86dcbc506').then(function (result) {
+    console.log('balloonanimal: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65').then(function (result) {
+    console.log('cakebatter: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x60bf609e0e8b724dc61ffee24737af15a6f6d905').then(function (result) {
+    console.log('doughnuthole: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x774a4a3c3130e4850a84dc8c80945dee4de2e017').then(function (result) {
+    console.log('DE2E017: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x1484d9ae6d590d6b0981e802f555a8dd74b93017').then(function (result) {
+    console.log('T74b93017: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x41899a097dac875318bf731e5f4a972544ad002d').then(function (result) {
+    console.log('Sad002d: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0x873da8e14fd648b763fe896caa41935e17801703').then(function (result) {
+    console.log('Ti801703: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+getBalance('0xd76654102c5f3c27886d5b3ec47b3111e18d8126').then(function (result) {
+    console.log('nftd00d: ' + (result/1000000000000000000).toFixed(4))
+    total_weth += parseInt(result)
+});
+//
+// Flags for threads, total offers attempted.
+//
+}
 var thread1done = 0
 var thread2done = 0
 var offers = 0

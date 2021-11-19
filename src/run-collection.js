@@ -181,7 +181,6 @@ quickButton.addEventListener('click', function(){
   progressBar.hidden = false
   increaseBid.disabled = false
   increaseBid1.disabled = false
-
   progressBar.max = assetCount
   run()
 })
@@ -237,16 +236,31 @@ async function sleep(delay) {
     await new Promise(resolve => setTimeout(resolve, delay));
 }
 
-function run(){
+async function run(){
   text.style.fontSize = '20px'
   text.innerHTML = 'Starting.....'
+  var promises = []
+  var delay = 0
+  var collectionName = COLLECTION_NAME.trim()
+  console.log(assetCount)
   for(var offset = 0; offset < assetCount; offset+=50){
-    var collection = getCollectionAssets(COLLECTION_NAME, offset)
-    collection.then(function(collection){
-      console.log(collection)
+      //await new Promise(resolve => setTimeout(resolve, 5000))
       try{
+        
+        var collection = await seaport.api.getAssets({
+          'collection': collectionName,
+          'offset': offset,
+          'limit': '50',
+        })
+      console.log(collection)
       for(var asset in collection['assets']){
-        if(document.getElementById('addProperty-2').value !== ''){
+        if(document.getElementById('sellOrder-2').value !== '' && document.getElementById('addProperty-2').value === ''){
+            if(collection['assets'][asset]['sellOrders'] !== null){
+              tokenId_array.push(collection['assets'][asset]['tokenId'])
+              name_array.push(collection['assets'][asset]['name'])
+            }
+        } else {
+          if(document.getElementById('addProperty-2').value !== ''){
           for(var trait in collection['assets'][asset]['traits']){
             if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
               if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
@@ -259,7 +273,6 @@ function run(){
                     tokenId_array.push(collection['assets'][asset]['tokenId'])
                     name_array.push(collection['assets'][asset]['name'])
                 }
-                
               }
             }
           }
@@ -268,17 +281,18 @@ function run(){
           tokenId_array.push(collection['assets'][asset]['tokenId'])
           name_array.push(collection['assets'][asset]['name'])
         }
+        }
 
       }
-      if(document.getElementById('addProperty-2').value !== ''){
-        assetCount = tokenId_array.length
-        progressBar.max = assetCount
-      }
+
     } catch (ex){
       console.log(ex)
     }
-    })
   }
+
+  assetCount = tokenId_array.length
+  progressBar.max = assetCount
+
   pause()
   reset()
   start()
@@ -289,18 +303,7 @@ function run(){
 async function getCollectionAssets(collectionName, offset){
   try {
     collectionName = collectionName.trim()
-    if (offset > 8000) {
-      sleep(8000)
-    }
-    else if (offset > 6000) {
-      sleep(6000)
-    }
-    else if (offset > 4000) {
-      sleep(4000)
-    }
-    else if (offset > 2000) {
-      sleep(2000)
-    }
+    
     var collect = await seaport.api.getAssets({
       'collection': collectionName,
       'offset': offset,
@@ -308,17 +311,21 @@ async function getCollectionAssets(collectionName, offset){
       
     })
     return collect
-
   } catch(ex){
+    sleep(5000)
       console.log("couldn't get collection")
   }
 }
 async function placeBid(){
   await new Promise(resolve => setTimeout(resolve, 3000))
+  if(maxOfferAmount !== 0){
+    delay.value = 1500
+  }
   for(var i = 0; i <= Math.floor(assetCount); i++){
     await new Promise(resolve => setTimeout(resolve, delay.value))
     var offset = 0
     if(maxOfferAmount !== 0){
+      await new Promise(resolve => setTimeout(resolve, delay.value))
       try{
         const order = await seaport.api.getOrders({
           asset_contract_address: NFT_CONTRACT_ADDRESS,
