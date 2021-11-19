@@ -286,6 +286,7 @@ async function run(){
       }
 
     } catch (ex){
+      await new Promise(resolve => setTimeout(resolve, 60000));
       console.log(ex)
     }
   }
