@@ -611,7 +611,7 @@ async function main(){
 
         offersMade.style.fontSize = '20px'
         offersMade.innerHTML = offers + '/' + progressBar.max 
-        if(offers / 100 === 0){
+        if(offers % 100 === 0){
           update_floor()
         }
     }
@@ -633,6 +633,9 @@ function check_errors(msg){
   if(msg.includes('Insufficient balance.')){
     return 'Insufficient balance. Please wrap more ETH.'
     //alert('Insufficient balance. Please wrap more ETH.')
+  }
+  else if(msg.includes('Invalid JSON RPC response')){
+    return 'Invalid JSON RPC response'
   }
   else if(msg.includes('This order does not have a valid bid price for the auction')){
     return 'Auction'
