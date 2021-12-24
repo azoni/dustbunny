@@ -403,7 +403,7 @@ async function getCollectionDetails(collectionName){
     console.log("couldn't get collection")
   }  
 }
-function update_floor(){
+function update_floor() {
   if(COLLECTION_NAME !== ''){
     getCollectionDetails(COLLECTION_NAME).then(function (collect){
       try{
