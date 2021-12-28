@@ -5,7 +5,6 @@ require('./traits.js')
 const cool_cat_traits = require('./coolcats.js')
 var utils = require('./utils.js')
 require('./run-collection.js')
-require('./run-collection-mid.js')
 const opensea = require("opensea-js");
 const { WyvernSchemaName } = require('opensea-js/lib/types')
 const OpenSeaPort = opensea.OpenSeaPort;
@@ -18,7 +17,6 @@ const Web3ProviderEngine = require("web3-provider-engine");
 //charltonsmith f934d4e8e2af46b38c60826c4fde1afa-
 //janeejacobsen 8dfb7126fa454b3a9d3b48f0435qaeb8c05--
 //joecurry c2941943ae8341dca396d5dc49426f92-
-var myAccount = document.getElementById('myAccount')
 var myAccount2 = document.getElementById('myAccount2')
 // Set initial Owner Address.
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
@@ -36,7 +34,6 @@ var MNEMONIC = secret.default.MNEMONIC
 //   myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
 //   myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[1].username
 // })
-myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
 myAccount2.innerHTML = values.default.OWNER_ADDRESS[0].username
 document.getElementById('myAccountbottom').innerHTML = values.default.OWNER_ADDRESS[1].username
 // account1.innerHTML = values.default.OWNER_ADDRESS[0].username
@@ -196,19 +193,7 @@ var blacklist = values.default.BLACK_LIST
 //   " 'doodles-official': '0x41899a097dac875318bf731e5f4a972544ad002d',\n" +
 //   "},")
 // })
-hide_mid()
-document.getElementById('hidemid').addEventListener('click', function(){
-  hide_mid()
-})
-function hide_mid(){
-  if(document.getElementById('hidemid').innerHTML === 'Show'){
-    document.getElementById('hidemid').innerHTML = "Hide"
-    document.getElementById('midui').style.display = 'block';
-  } else {
-   document.getElementById('midui').style.display = 'none';
-   document.getElementById('hidemid').innerHTML = 'Show'   
-  }
-}
+
 hide_bottom()
 document.getElementById('hidebottom').addEventListener('click', function(){
   hide_bottom()
@@ -848,25 +833,16 @@ function update_floor(){
   } else {
     console.log('No Collection selected.')
   }
-  getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-  document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
-  });
 
   getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
       document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
   });
-  eth.getBalance(values.default.OWNER_ADDRESS[1].address)
-  .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
   eth.getBalance(values.default.OWNER_ADDRESS[0].address)
   .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
   eth.getBalance(values.default.OWNER_ADDRESS[1].address)
   .then(res => document.getElementById('balancebottom').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 }
 
-getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
-
-});
 getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
     document.getElementById('balancebottom').innerHTML = (result/1000000000000000000).toFixed(4)
 
@@ -885,21 +861,6 @@ document.getElementById('nextAccount-2').addEventListener('click', function(){
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
   });
 })
-var accountIndex1 = 1
-document.getElementById('nextAccount-1').addEventListener('click', function(){
-  console.log('nft-nm')
-  accountIndex1 += 1
-  if(accountIndex1 === values.default.OWNER_ADDRESS.length){
-    accountIndex1 = 0
-  }
-  OWNER_ADDRESS = values.default.OWNER_ADDRESS[accountIndex1].address
-  myAccount.innerHTML = values.default.OWNER_ADDRESS[accountIndex1].username
-  getBalance(values.default.OWNER_ADDRESS[accountIndex1].address).then(function (result) {
-    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
-  });
-})
-// eth.getBalance(values.default.OWNER_ADDRESS[1].address)
-// .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 // eth.getBalance(values.default.OWNER_ADDRESS[0].address)
 // .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 
