@@ -288,8 +288,8 @@ document.getElementById('listed_bot').addEventListener('click', function(){
 async function listed_bid(){
   reset()
   start()
-  text.style.float = 'left'
-  text.style.align = 'left'
+  text.innerHTML = ''
+  text1.innerHTML = ''
   document.getElementById('body').style.background = '#90EE90'
   if(document.getElementById('event_window').value === ''){
     event_window = 180000
@@ -315,7 +315,7 @@ async function listed_bid(){
   var watch_list_low = values.default.WATCH_LIST_LOW
   do {
     try{
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 750))
       const order = await seaport.api.getOrders({
         side: 1,
         order_by: 'created_date', 
@@ -376,7 +376,7 @@ async function listed_bid(){
             // }
             console.log('Top Bid: ' + top_bid)
             if(top_bid < flooroffer){
-              flooroffer = parseFloat(top_bid) + parseFloat(.001)
+              flooroffer = parseFloat(top_bid) + parseFloat(.01)
             }
             if(flooroffer < min_flooroffer || top_bid < min_flooroffer){
               flooroffer = min_flooroffer
@@ -399,10 +399,10 @@ async function listed_bid(){
               accountAddress: values.default.EVENT_WALLET,
               expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
             })
-            console.log('Bid: ' + flooroffer + ' on ' + order.orders[o].asset.name)
-            
-            text.innerHTML += 'Bid: ' + flooroffer.toFixed(4) + ' on <a target=_blank href=https://opensea.io/assets/' + order.orders[o].asset.tokenAddress + '/' + order.orders[o].asset.tokenId + '>' + order.orders[o].asset.collection.slug + ' ' + order.orders[o].asset.tokenId + "<a>"
-            text.innerHTML += '<img width=50px height=50px src=' + order.orders[o].asset.imageUrl + '><img><br>'
+            console.log('Price: ' + order.orders[o].currentPrice/1000000000000000000 + ' Bid: ' + flooroffer + ' on ' + order.orders[o].asset.name)
+            text.innerHTML += '<br><img width=200px height=200px src=' + order.orders[o].asset.imageUrl + '><img>'
+            text.innerHTML += 'Floor: ' + floor_price  + ' Price: ' + order.orders[o].currentPrice/1000000000000000000 + ' Bid: ' + flooroffer.toFixed(4) + ' on <a target=_blank href=https://opensea.io/assets/' + order.orders[o].asset.tokenAddress + '/' + order.orders[o].asset.tokenId + '>' + order.orders[o].asset.collection.slug + ' ' + order.orders[o].asset.tokenId + "<a> "
+            window.scrollTo(0,document.body.scrollHeight);
             //console.log(asset.buyOrders)
             //console.log(asset.traits)
           }
@@ -423,9 +423,10 @@ async function listed_bid(){
       }
       
     }
-
+    
     offset += 50
   } while(order_length === 50)
+  text1.innerHTML = 'Complete - ' + counter + ' bids made'
   console.log(parseInt(offset) + order_length)
   console.log(counter)
   var end_time = Math.floor(+new Date() / 1000)
