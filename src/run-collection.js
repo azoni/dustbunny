@@ -5,6 +5,8 @@ const opensea = require("opensea-js")
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
+const { getTimeBasedInfuraKey } = require('./shared.js');
+
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 values.default.EVENT_WALLET = OWNER_ADDRESS
 // Provider
@@ -30,16 +32,7 @@ var provider_string = ''
 if(values.default.ALCHEMY_KEY !== undefined){
   provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
 } else {
-  var currentHour = new Date().getHours()
-  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
-  if(values.default.INFURA_KEY.length === 6){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
-  } else if(values.default.INFURA_KEY.length === 4){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-  }else if(values.default.INFURA_KEY.length === 5){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
-  }
-  provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
+  provider_string = "https://mainnet.infura.io/v3/" + getTimeBasedInfuraKey()
 }
 var infuraRpcSubprovider = new RPCSubprovider({
   rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
@@ -80,7 +73,7 @@ var infura_index = 0
 
 document.getElementById('infurakey').addEventListener('click', function(){
   providerEngine.stop();
-  INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
+  let INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   infuraRpcSubprovider = new RPCSubprovider({
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
   });
@@ -162,15 +155,7 @@ document.getElementById('aggressivemulti-2').addEventListener('click', function(
 
 function create_seaport(){
   providerEngine.stop();
-  currentHour = new Date().getHours()
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
-  if(values.default.INFURA_KEY.length === 6){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
-  } else if(values.default.INFURA_KEY.length === 4){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-  }else if(values.default.INFURA_KEY.length === 5){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
-}
+  let INFURA_KEY = getTimeBasedInfuraKey();
   console.log('creating seaport ' + INFURA_KEY)
   console.log('creating seaport ' + values.default.API_KEY)
   console.log(run_count)
