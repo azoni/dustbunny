@@ -13,6 +13,7 @@ const MnemonicWalletSubprovider = require("@0x/subproviders")
   .MnemonicWalletSubprovider;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
+const { getTimeBasedInfuraKey } = require('./shared.js');
 //teacuppig1234 d0fc2dfb800045358e70548d71176469-
 //charltonsmith f934d4e8e2af46b38c60826c4fde1afa-
 //janeejacobsen 8dfb7126fa454b3a9d3b48f0435qaeb8c05--
@@ -45,37 +46,15 @@ var stop2 = 0
 //
 // Get current time to determine which Infura key to use. Swaps keys every 6 hours.
 //
-
-    // var msg = new SpeechSynthesisUtterance();
-    // msg.text = 'api key pause ' + values.default.API_KEY
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'alchemy key pause ' + values.default.ALCHEMY_KEY
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'infura key pause ' + values.default.INFURA_KEY[0]
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'next infura key pause ' + values.default.INFURA_KEY[1]
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'next infura key pause ' + values.default.INFURA_KEY[2]
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'next infura key pause ' + values.default.INFURA_KEY[3]
-    // window.speechSynthesis.speak(msg);
-
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
 });
 var provider_string = ''
+let INFURA_KEY;
 if(values.default.ALCHEMY_KEY !== undefined){
   provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
 } else {
-  var currentHour = new Date().getHours()
-  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
-  if(values.default.INFURA_KEY.length === 6){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
-  } else if(values.default.INFURA_KEY.length === 4){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-  }else if(values.default.INFURA_KEY.length === 5){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
-  }
+  INFURA_KEY =  getTimeBasedInfuraKey();
   provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
 }
 var infuraRpcSubprovider = new RPCSubprovider({
@@ -109,15 +88,7 @@ var seaport = new OpenSeaPort(
 
 function create_seaport(){
   providerEngine.stop();
-  currentHour = new Date().getHours()
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
-  if(values.default.INFURA_KEY.length === 6){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
-  } else if(values.default.INFURA_KEY.length === 4){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-  }else if(values.default.INFURA_KEY.length === 5){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
-}
+  INFURA_KEY = getTimeBasedInfuraKey();
   console.log('creating seaport ' + values.default.API_KEY)
   infuraRpcSubprovider = new RPCSubprovider({
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
@@ -213,7 +184,8 @@ try{
 } catch(ex){
   console.log('no infura keys found')
 }
-document.getElementById('infurakey').addEventListener('click', function(){
+
+document.getElementById('infurakey').addEventListener('click', function() {
   providerEngine.stop();
   INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   console.log('creating seaport ' + INFURA_KEY)
