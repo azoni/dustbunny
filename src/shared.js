@@ -11,9 +11,8 @@ const opensea = require('opensea-js')
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 
-
 /**
- * 
+ * Get current time to determine which Infura key to use. Swaps keys every 6 hours.
  * @returns The infura key that should be used at this specific hour. Doing time math to select the correct infura key.
  */
 function getTimeBasedInfuraKey() {
@@ -32,7 +31,7 @@ function getTimeBasedInfuraKey() {
   return INFURA_KEY;
 }
 
-function buildSeaport(providerEngine) {
+function buildSeaport({ providerEngine }) {
   let seaport = new OpenSeaPort(
     providerEngine,
     {

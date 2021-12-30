@@ -1,16 +1,13 @@
 const values = require('./values.js')
 const data = require('./data.js')
-const secret = require('./secret.js')
 require('./traits.js')
 const cool_cat_traits = require('./coolcats.js')
 var utils = require('./utils.js')
 require('./run-collection.js')
 const { WyvernSchemaName } = require('opensea-js/lib/types')
-const MnemonicWalletSubprovider = require("@0x/subproviders")
-  .MnemonicWalletSubprovider;
-const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
-const Web3ProviderEngine = require("web3-provider-engine");
 const { buildSeaport, getTimeBasedInfuraKey } = require('./shared.js');
+const ProviderEngine = require('./provider-engine.js');
+
 //teacuppig1234 d0fc2dfb800045358e70548d71176469-
 //charltonsmith f934d4e8e2af46b38c60826c4fde1afa-
 //janeejacobsen 8dfb7126fa454b3a9d3b48f0435qaeb8c05--
@@ -18,7 +15,7 @@ const { buildSeaport, getTimeBasedInfuraKey } = require('./shared.js');
 var myAccount2 = document.getElementById('myAccount2')
 // Set initial Owner Address.
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
-var MNEMONIC = secret.default.MNEMONIC
+
 //BLACK_LIST: ['DrBurry', 'DustBunny', 'BalloonAnimal', 'DE2E017', 'CakeBatter', 'T74b93017', 'DoughnutHole', 'ad002d', 'Ti801703'],
 // web3.eth.getBalance("0x407d73d8a49eeb85d32cf465507dd71d507100c1")
 // .then(console.log);
@@ -40,12 +37,6 @@ document.getElementById('myAccountbottom').innerHTML = values.default.OWNER_ADDR
 // Provider
 var stop = 0
 var stop2 = 0
-//
-// Get current time to determine which Infura key to use. Swaps keys every 6 hours.
-//
-const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
-  mnemonic: MNEMONIC,
-});
 var provider_string = ''
 let INFURA_KEY;
 if(values.default.ALCHEMY_KEY !== undefined){
@@ -54,12 +45,7 @@ if(values.default.ALCHEMY_KEY !== undefined){
   INFURA_KEY =  getTimeBasedInfuraKey();
   provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
 }
-var infuraRpcSubprovider = new RPCSubprovider({
-  rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
-});
-var providerEngine = new Web3ProviderEngine();
-providerEngine.addProvider(mnemonicWalletSubprovider);
-providerEngine.addProvider(infuraRpcSubprovider);
+let providerEngine = new ProviderEngine(provider_string);
 providerEngine.start();
 
 //
@@ -77,18 +63,12 @@ var COLLECTION_NAME = ''
 var seaport = buildSeaport(providerEngine);
 
 function create_seaport(){
-  providerEngine.stop();
   INFURA_KEY = getTimeBasedInfuraKey();
   console.log('creating seaport ' + values.default.API_KEY)
-  infuraRpcSubprovider = new RPCSubprovider({
-    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-  });
-  providerEngine = new Web3ProviderEngine();
-  providerEngine.addProvider(mnemonicWalletSubprovider);
-  providerEngine.addProvider(infuraRpcSubprovider);
-  providerEngine.start();
+  providerEngine.reset('https://mainnet.infura.io/v3/' + INFURA_KEY);
   seaport = buildSeaport(providerEngine);
 }
+
 if(values.default.TITLE === 'Home'){
   current_running()
 }
@@ -169,16 +149,9 @@ try{
 }
 
 document.getElementById('infurakey').addEventListener('click', function() {
-  providerEngine.stop();
   INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   console.log('creating seaport ' + INFURA_KEY)
-  infuraRpcSubprovider = new RPCSubprovider({
-    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-  });
-  providerEngine = new Web3ProviderEngine();
-  providerEngine.addProvider(mnemonicWalletSubprovider);
-  providerEngine.addProvider(infuraRpcSubprovider);
-  providerEngine.start();
+  providerEngine.reset('https://mainnet.infura.io/v3/' + INFURA_KEY)
   seaport = buildSeaport(providerEngine);
   infura_index += 1
   if(infura_index === values.default.INFURA_KEY.length - 1){
