@@ -1,23 +1,13 @@
 const values = require('./values.js')
 const data = require('./data.js')
-const secret = require('./secret.js')
 const { WyvernSchemaName } = require('opensea-js/lib/types')
 const { buildSeaport, getTimeBasedInfuraKey } = require('./shared.js');
+
+const ProviderEngine = require('./provider-engine.js');
 
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 values.default.EVENT_WALLET = OWNER_ADDRESS
 // Provider
-const MnemonicWalletSubprovider = require("@0x/subproviders")
-.MnemonicWalletSubprovider;
-const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
-const Web3ProviderEngine = require("web3-provider-engine");
-const MNEMONIC = secret.default.MNEMONIC
-const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
-  mnemonic: MNEMONIC,
-});
-//
-// Get current time to determine which Infura key to use. Swaps keys every 6 hours.
-//
 if(values.default.TITLE !== undefined){
   document.getElementById('title').innerHTML = values.default.TITLE
 }
@@ -31,25 +21,20 @@ if(values.default.ALCHEMY_KEY !== undefined){
 } else {
   provider_string = "https://mainnet.infura.io/v3/" + getTimeBasedInfuraKey()
 }
-var infuraRpcSubprovider = new RPCSubprovider({
-  rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
-});
+
 values.default.BLACK_LIST.push(values.default.OWNER_ADDRESS[0].username)
-var providerEngine = new Web3ProviderEngine();
-providerEngine.addProvider(mnemonicWalletSubprovider);
-providerEngine.addProvider(infuraRpcSubprovider);
+let providerEngine = new ProviderEngine(provider_string);
 if(values.default.ALCHEMY_KEY !== undefined){
   providerEngine.start();
 }
-//providerEngine.start();
+// Create seaport object using provider created.
+var seaport = buildSeaport(providerEngine);
 
 if(values.default.DEFAULT_TRAIT !== undefined){
   document.getElementById('addProperty-2').value = values.default.DEFAULT_TRAIT[0]
   document.getElementById('addTrait-2').value = values.default.DEFAULT_TRAIT[1]
 }
 var run_count = 0
-// Create seaport object using provider created. 
-var seaport = buildSeaport(providerEngine);
 
 document.getElementById('usepublic').addEventListener('click', function(){
   delay.value = 1500
@@ -62,15 +47,8 @@ document.getElementById('usepublic').addEventListener('click', function(){
 var infura_index = 0
 
 document.getElementById('infurakey').addEventListener('click', function(){
-  providerEngine.stop();
   let INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
-  infuraRpcSubprovider = new RPCSubprovider({
-    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-  });
-  providerEngine = new Web3ProviderEngine();
-  providerEngine.addProvider(mnemonicWalletSubprovider);
-  providerEngine.addProvider(infuraRpcSubprovider);
-  providerEngine.start();
+  providerEngine.reset('https://mainnet.infura.io/v3/' + INFURA_KEY)
   seaport = buildSeaport(providerEngine);
 
   infura_index += 1
@@ -138,18 +116,11 @@ document.getElementById('aggressivemulti-2').addEventListener('click', function(
 
 
 function create_seaport(){
-  providerEngine.stop();
   let INFURA_KEY = getTimeBasedInfuraKey();
   console.log('creating seaport ' + INFURA_KEY)
   console.log('creating seaport ' + values.default.API_KEY)
   console.log(run_count)
-  infuraRpcSubprovider = new RPCSubprovider({
-    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-  });
-  providerEngine = new Web3ProviderEngine();
-  providerEngine.addProvider(mnemonicWalletSubprovider);
-  providerEngine.addProvider(infuraRpcSubprovider);
-  providerEngine.start();
+  providerEngine.reset('https://mainnet.infura.io/v3/' + INFURA_KEY);
   seaport = buildSeaport(providerEngine);
 }
 
