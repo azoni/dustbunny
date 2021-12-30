@@ -4,6 +4,13 @@
 
 const values = require('./values.js');
 
+/**
+ * For buildseaport
+ */
+const opensea = require('opensea-js')
+const OpenSeaPort = opensea.OpenSeaPort;
+const Network = opensea.Network;
+
 
 /**
  * 
@@ -25,4 +32,16 @@ function getTimeBasedInfuraKey() {
   return INFURA_KEY;
 }
 
-module.exports = { getTimeBasedInfuraKey };
+function buildSeaport(providerEngine) {
+  let seaport = new OpenSeaPort(
+    providerEngine,
+    {
+    networkName: Network.Main,
+      apiKey: values.default.API_KEY
+    },
+    (arg) => console.log(arg)
+  );
+  return seaport;
+}
+
+module.exports = { getTimeBasedInfuraKey, buildSeaport };
