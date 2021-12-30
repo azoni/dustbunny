@@ -5,15 +5,12 @@ require('./traits.js')
 const cool_cat_traits = require('./coolcats.js')
 var utils = require('./utils.js')
 require('./run-collection.js')
-const opensea = require("opensea-js");
 const { WyvernSchemaName } = require('opensea-js/lib/types')
-const OpenSeaPort = opensea.OpenSeaPort;
-const Network = opensea.Network;
 const MnemonicWalletSubprovider = require("@0x/subproviders")
   .MnemonicWalletSubprovider;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
-const { getTimeBasedInfuraKey } = require('./shared.js');
+const { buildSeaport, getTimeBasedInfuraKey } = require('./shared.js');
 //teacuppig1234 d0fc2dfb800045358e70548d71176469-
 //charltonsmith f934d4e8e2af46b38c60826c4fde1afa-
 //janeejacobsen 8dfb7126fa454b3a9d3b48f0435qaeb8c05--
@@ -77,14 +74,7 @@ var COLLECTION_NAME = ''
 //dustbunny 1a0882610c8d48bd8751b67cc7991f21
 //04903a94a949443f96061e0046b034c7 event ping janesmitheliz@gmail.com
 // Create seaport object using provider created. 
-var seaport = new OpenSeaPort(
-  providerEngine,
-  {
-    networkName: Network.Main,
-    apiKey: values.default.API_KEY
-  },
-  (arg) => console.log(arg)
-);
+var seaport = buildSeaport(providerEngine);
 
 function create_seaport(){
   providerEngine.stop();
@@ -97,14 +87,7 @@ function create_seaport(){
   providerEngine.addProvider(mnemonicWalletSubprovider);
   providerEngine.addProvider(infuraRpcSubprovider);
   providerEngine.start();
-  seaport = new OpenSeaPort(
-    providerEngine,
-    {
-      networkName: Network.Main,
-      apiKey: values.default.API_KEY
-    },
-    (arg) => console.log(arg)
-  );
+  seaport = buildSeaport(providerEngine);
 }
 if(values.default.TITLE === 'Home'){
   current_running()
@@ -196,14 +179,7 @@ document.getElementById('infurakey').addEventListener('click', function() {
   providerEngine.addProvider(mnemonicWalletSubprovider);
   providerEngine.addProvider(infuraRpcSubprovider);
   providerEngine.start();
-  seaport = new OpenSeaPort(
-    providerEngine,
-    {
-      networkName: Network.Main,
-      apiKey: values.default.API_KEY
-    },
-    (arg) => console.log(arg)
-  );
+  seaport = buildSeaport(providerEngine);
   infura_index += 1
   if(infura_index === values.default.INFURA_KEY.length - 1){
     infura_index = 0

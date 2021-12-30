@@ -1,11 +1,8 @@
 const values = require('./values.js')
 const data = require('./data.js')
 const secret = require('./secret.js')
-const opensea = require("opensea-js")
-const OpenSeaPort = opensea.OpenSeaPort;
-const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
-const { getTimeBasedInfuraKey } = require('./shared.js');
+const { buildSeaport, getTimeBasedInfuraKey } = require('./shared.js');
 
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 values.default.EVENT_WALLET = OWNER_ADDRESS
@@ -52,15 +49,8 @@ if(values.default.DEFAULT_TRAIT !== undefined){
 }
 var run_count = 0
 // Create seaport object using provider created. 
-var seaport = new OpenSeaPort(
+var seaport = buildSeaport(providerEngine);
 
-  providerEngine,
-  {
-    networkName: Network.Main,
-    apiKey: values.default.API_KEY
-  },
-  (arg) => console.log(arg)
-);
 document.getElementById('usepublic').addEventListener('click', function(){
   delay.value = 1500
   values.default.API_KEY = '2f6f419a083c46de9d83ce3dbe7db601'
@@ -81,14 +71,8 @@ document.getElementById('infurakey').addEventListener('click', function(){
   providerEngine.addProvider(mnemonicWalletSubprovider);
   providerEngine.addProvider(infuraRpcSubprovider);
   providerEngine.start();
-  seaport = new OpenSeaPort(
-    providerEngine,
-    {
-    networkName: Network.Main,
-      apiKey: values.default.API_KEY
-    },
-    (arg) => console.log(arg)
-  );
+  seaport = buildSeaport(providerEngine);
+
   infura_index += 1
   if(infura_index === values.default.INFURA_KEY.length - 1){
     infura_index = 0
@@ -166,14 +150,7 @@ function create_seaport(){
   providerEngine.addProvider(mnemonicWalletSubprovider);
   providerEngine.addProvider(infuraRpcSubprovider);
   providerEngine.start();
-  seaport = new OpenSeaPort(
-    providerEngine,
-    {
-      networkName: Network.Main,
-      apiKey: values.default.API_KEY
-    },
-    (arg) => console.log(arg)
-  );
+  seaport = buildSeaport(providerEngine);
 }
 
 var tokenId_array = []
