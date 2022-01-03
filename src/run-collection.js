@@ -128,6 +128,11 @@ var tokenId_array = []
 var name_array = []
 var asset_dict = []
 
+function addAssetToList(id, name) {
+  tokenId_array.push(id)
+  name_array.push(name)    
+}
+
 var NFT_CONTRACT_ADDRESS = ''
 var offerAmount = 0
 var maxOfferAmount = 0
@@ -318,7 +323,7 @@ document.getElementById('smartStart-2').addEventListener('click', function(){
   test_bid()
 })
 async function test_bid(){
-  var asset = {
+  const asset = {
     tokenId: '1690',
     tokenAddress: '0x1cb1a5e65610aeff2551a50f76a87a7d3fb649c6',
     //schemaName: WyvernSchemaName.ERC1155
@@ -474,7 +479,7 @@ text1.style.fontSize = '20px'
 ///********************************************************************************
 ///This function is responsible for generating the assets to be bid on. 
 ///Ex. multi trait bidding, fractional runs on set.
-async function run(){
+async function run() {
   if(document.getElementById('delayStart-2').value !== ''){
     text.innerHTML = 'Starting in ' + document.getElementById('delayStart-2').value + ' minutes.'
     await new Promise(resolve => setTimeout(resolve, document.getElementById('delayStart-2').value * 60000));
@@ -525,97 +530,7 @@ async function run(){
         break
       }
       //await new Promise(resolve => setTimeout(resolve, 5000))
-      try{
-        var collection = await seaport.api.getAssets({
-          'collection': collectionName,
-          'offset': offset,
-          'limit': '50',
-          'order_direction': direction
-        })
-        console.log(collection)
-        for(var asset in collection['assets']){
-          if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
-            if(collection['assets'][asset]['sellOrders'] !== null){
-              if(document.getElementById('aboveFloor-2').value !== ''){
-                if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
-                  tokenId_array.push(collection['assets'][asset]['tokenId'])
-                  name_array.push(collection['assets'][asset]['name'])    
-                  console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
-                }
-              } else {
-                console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)
-                tokenId_array.push(collection['assets'][asset]['tokenId'])
-                name_array.push(collection['assets'][asset]['name'])
-              }     
-            }
-          } else {
-            if(document.getElementById('addProperty-2').value !== ''){
-              for(var trait in collection['assets'][asset]['traits']){
-                if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
-                  if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
-                    if(document.getElementById('sellOrder-2').checked){
-                      if(collection['assets'][asset]['sellOrders'] !== null){
-                        
-                        tokenId_array.push(collection['assets'][asset]['tokenId'])
-                        name_array.push(collection['assets'][asset]['name'])
-                      }
-                    } else{
-                      tokenId_array.push(collection['assets'][asset]['tokenId'])
-                      name_array.push(collection['assets'][asset]['name'])
-                    }
-                  }
-                }
-              }
-            } 
-            else {
-              var traitfound = false
-              if(document.getElementById('multitrait-2').checked === true || document.getElementById('traitskip-2').checked === true){
-                for(trait in collection['assets'][asset]['traits']){
-                  for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
-                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
-                      for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
-                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(t)){
-                          traitfound = true
-                          
-                          if(Object.keys(asset_dict).includes(collection['assets'][asset]['tokenId'])){
-                            if(asset_dict[collection['assets'][asset]['tokenId']][0] < values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t][0]){
-                              asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
-                            }
-                          } else {
-                            asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
-                          }
-                          
-                        }
-                      }
-                    }
-
-                  }
-                } 
-                  if (traitfound === true && document.getElementById('traitskip-2').checked === false){
-                      tokenId_array.push(collection['assets'][asset]['tokenId'])
-                      name_array.push(collection['assets'][asset]['name'])
-                  }
-                  if(traitfound === false && document.getElementById('traitsonly-2').checked === false){
-                    tokenId_array.push(collection['assets'][asset]['tokenId'])
-                    name_array.push(collection['assets'][asset]['name'])
-                  }
-                  traitfound = false
-                // if(document.getElementById('traitsonly-2') === false){
-                //   tokenId_array.push(collection['assets'][asset]['tokenId'])
-                //   name_array.push(collection['assets'][asset]['name'])
-                // }  
-              } 
-              else{
-                tokenId_array.push(collection['assets'][asset]['tokenId'])
-                name_array.push(collection['assets'][asset]['name'])
-              } 
-            }
-          }
-        }
-      } catch (ex){
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        console.log(ex)
-      }
+      await fetchAndProcessCollection(collectionName, offset, direction);
       console.log(tokenId_array.length)
       text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
     }
@@ -663,93 +578,7 @@ async function run(){
         break
       }
       //await new Promise(resolve => setTimeout(resolve, 5000))
-      try{
-        collection = await seaport.api.getAssets({
-          'collection': collectionName,
-          'offset': offset,
-          'limit': '50',
-          'order_direction': direction
-        })
-        console.log(collection)
-        for(asset in collection['assets']){
-          if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
-            
-            if(collection['assets'][asset]['sellOrders'] !== null){
-              if(document.getElementById('aboveFloor-2').value !== ''){
-                if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
-                  tokenId_array.push(collection['assets'][asset]['tokenId'])
-                  name_array.push(collection['assets'][asset]['name'])    
-                  console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
-                }
-              } else {
-                console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)
-                tokenId_array.push(collection['assets'][asset]['tokenId'])
-                name_array.push(collection['assets'][asset]['name'])
-              }
-              
-            }
-          } else {
-            if(document.getElementById('addProperty-2').value !== ''){
-              for(trait in collection['assets'][asset]['traits']){
-                if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
-                  if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
-                    if(document.getElementById('sellOrder-2').checked){
-                      if(collection['assets'][asset]['sellOrders'] !== null){
-                        
-                        tokenId_array.push(collection['assets'][asset]['tokenId'])
-                        name_array.push(collection['assets'][asset]['name'])
-                      }
-                    } else{
-                      tokenId_array.push(collection['assets'][asset]['tokenId'])
-                      name_array.push(collection['assets'][asset]['name'])
-                    }
-                  }
-                }
-              }
-            } 
-            else {
-              traitfound = false
-              if(document.getElementById('multitrait-2').checked === true || document.getElementById('traitskip-2').checked === true){
-                for(trait in collection['assets'][asset]['traits']){
-                  for(p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
-                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
-                      for(t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
-                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(t)){
-                          traitfound = true
-                          if(Object.keys(asset_dict).includes(collection['assets'][asset]['tokenId'])){
-                            if(asset_dict[collection['assets'][asset]['tokenId']][0] < values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t][0]){
-                              asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
-                            }
-                          } else {
-                            asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
-                          }
-                        }
-                      }
-                    }
-                  }   
-                }
-                  if (traitfound === true && document.getElementById('traitskip-2').checked === false){
-                      tokenId_array.push(collection['assets'][asset]['tokenId'])
-                      name_array.push(collection['assets'][asset]['name'])
-                  }
-                  if(traitfound === false && document.getElementById('traitsonly-2').checked === false){
-                    tokenId_array.push(collection['assets'][asset]['tokenId'])
-                    name_array.push(collection['assets'][asset]['name'])
-                  }
-                  traitfound = false
-              } 
-              else{
-                tokenId_array.push(collection['assets'][asset]['tokenId'])
-                name_array.push(collection['assets'][asset]['name'])
-              }
-                
-            }
-          }
-        }
-      } catch (ex){
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        console.log(ex)
-      }
+      await fetchAndProcessCollection(collectionName, offset, direction);
       console.log(tokenId_array.length)
       text.innerHTML = tokenId_array.length + '(' + (parseInt(offset) + temp_offset) + ') of ' + assetCount + ' collected'
     }
@@ -793,6 +622,87 @@ async function run(){
   
   }
 }
+/**
+ * Fetch a collection with some search and sort parameters and process the collection in preperation for bidding.
+ * @param {string} collectionName - name of collection to query.
+ * @param {number} offset - offset for the getAssets query.
+ * @param {string} direction - Either 'asc' or 'desc'. Sort order of query.
+ */
+async function fetchAndProcessCollection(collectionName, offset, direction) {
+  try {
+    let collection = await seaport.api.getAssets({
+      'collection': collectionName,
+      'offset': offset,
+      'limit': '50',
+      'order_direction': direction
+    })
+    console.log(collection)
+    selectAssetsFromCollection(collection);
+  } catch (ex){
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    console.log(ex)
+  }
+}
+/**
+ * Based on the parameters given to bot makes a list of assets that meet the requirements.
+ * @param {} collection - response from seaport.api.getAssets
+ */
+function selectAssetsFromCollection(collection) {
+  for (let asset of collection.assets) {
+    let traitNameField = document.getElementById('addProperty-2').value;
+    // if we are buying only listed nfts and there are no specified traits we want
+    if (document.getElementById('sellOrder-2').checked && traitNameField === '') {
+      if (asset.sellOrders !== null) {
+        let aboveFloorValue = document.getElementById('aboveFloor-2').value;
+        let topSaleOrderPrice = asset.sellOrders[0].basePrice/1000000000000000000;
+        if (aboveFloorValue === '' || topSaleOrderPrice < current_floor * aboveFloorValue) {
+          console.log(topSaleOrderPrice);
+          addAssetToList(asset.tokenId, asset.name);
+        }
+      }
+    } else if (traitNameField !== '') { // trait name and value text field in bot ui populated
+      for (const trait of asset.traits) {
+        if (trait['trait_type'].toLowerCase().includes(traitNameField) && trait['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)) {
+          if (document.getElementById('sellOrder-2').checked === false) { // include all unlisted and listed nfts
+            addAssetToList(asset.tokenId, asset.name);
+          } else if (asset.sellOrders !== null) { // include only listed nfts
+            addAssetToList(asset.tokenId, asset.name);
+          }
+        }
+      }
+    } else if (document.getElementById('multitrait-2').checked === true || document.getElementById('traitskip-2').checked === true) { // we have a list of traits to search or skip ( at this point listed was not checked)
+      let traitfound = false;
+      let traitsToSearchFor = values.default.COLLECTION_TRAIT[COLLECTION_NAME]; // bid range data for traits we're searching for
+      for (const trait of asset.traits) { // for each trait on the asset
+        for (const trait_name in traitsToSearchFor) { // and for each trait in our traitsToSearchFor map
+          if (trait['trait_type'].toLowerCase().includes(trait_name)) { //trait_type is the name of the trait. is the trait name in our traitsToSearchFor
+            for (const trait_val in traitsToSearchFor[trait_name]) { // for each trait value we are interested in
+              if (trait['value'].toLowerCase().includes(trait_val)) { // is the asset trait value in our traitsToSearchFor
+                traitfound = true;
+                const traitBidRange = traitsToSearchFor[trait_name][trait_val];
+                // set trait bid range or update range if asset has another higher value trait
+                if (Object.keys(asset_dict).includes(asset.tokenId) === false) {
+                  asset_dict[asset.tokenId] = traitBidRange;
+                } else if (asset_dict[asset.tokenId][0] < traitBidRange[0]) {
+                  asset_dict[asset.tokenId] = traitBidRange;
+                }
+              }
+            }
+          }
+        }
+      }
+      if (traitfound === true && document.getElementById('traitskip-2').checked === false) {
+        addAssetToList(asset.tokenId, asset.name);
+      }
+      if (traitfound === false && document.getElementById('traitsonly-2').checked === false) {
+        addAssetToList(asset.tokenId, asset.name);
+      }
+    } else { // all listed or unlisted. no multitraits to search for. no traits specified in ui
+      addAssetToList(asset.tokenId, asset.name);
+    }
+  }
+}
+
 function check_errors(msg){
   if(msg.includes('Insufficient balance.')){
     beep()
