@@ -159,7 +159,8 @@ document.getElementById('aggressivemulti-2').addEventListener('click', function(
   }
 })
 
-
+//only if using infura
+//not called if using alchemy 
 function create_seaport(){
   providerEngine.stop();
   currentHour = new Date().getHours()
@@ -607,6 +608,12 @@ async function run(){
         for(var asset in collection['assets']){
           if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
             if(collection['assets'][asset]['sellOrders'] !== null){
+              if(collection['assets'][asset]['sellOrders'][0].taker !== "0x0000000000000000000000000000000000000000"){
+                console.log('private sale')
+                beep()
+                console.log(collection['assets'][asset]['sellOrders'].takerAccount)
+              }
+              
               if(document.getElementById('aboveFloor-2').value !== ''){
                 if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
                   tokenId_array.push(collection['assets'][asset]['tokenId'])
