@@ -101,25 +101,31 @@ async function get_nfts(){
 			console.log(data)
 			console.log(data.result.length)
 			for(var i in data.result){
-				//token_ids.push(data.result[i].tokenID)
-				const asset = await seaport.api.getAsset({
-					tokenAddress: data.result[i].contractAddress,
-					tokenId: data.result[i].tokenID,
-				})
-				if(asset.owner.address.toLowerCase() === values.default.OWNER_ADDRESS[account].address.toLowerCase() && hidden.includes(asset.collection.slug) === false){
-					// if(Object.keys(collections).includes(asset.collection.slug)){
-					// 	collections[asset.collection.slug].push(asset)
-					// } else {
-					// 	collections[asset.collection.slug] = [asset]
-					// }
-					if(collections[asset.collection.slug] === undefined){
-						collections[asset.collection.slug] = {}
-						collections[asset.collection.slug][asset.tokenId] = asset
-					} else {
-						if(!(asset.tokenId in collections[asset.collection.slug])){
+				try {
+					await new Promise(resolve => setTimeout(resolve, 250))
+					//token_ids.push(data.result[i].tokenID)
+					const asset = await seaport.api.getAsset({
+						tokenAddress: data.result[i].contractAddress,
+						tokenId: data.result[i].tokenID,
+					})
+					if(asset.owner.address.toLowerCase() === values.default.OWNER_ADDRESS[account].address.toLowerCase() && hidden.includes(asset.collection.slug) === false){
+						// if(Object.keys(collections).includes(asset.collection.slug)){
+						// 	collections[asset.collection.slug].push(asset)
+						// } else {
+						// 	collections[asset.collection.slug] = [asset]
+						// }
+						if(collections[asset.collection.slug] === undefined){
+							collections[asset.collection.slug] = {}
 							collections[asset.collection.slug][asset.tokenId] = asset
+						} else {
+							if(!(asset.tokenId in collections[asset.collection.slug])){
+								collections[asset.collection.slug][asset.tokenId] = asset
+							}
 						}
 					}
+				} catch(error){
+					console.log(error)
+					await new Promise(resolve => setTimeout(resolve, 1000))
 				}
 			}
 			
@@ -139,7 +145,7 @@ async function display(){
     }
 	for(const collection in collections){
 		try{
-			await new Promise(resolve => setTimeout(resolve, 250))
+			await new Promise(resolve => setTimeout(resolve, 500))
 			const collect = await seaport.api.get('/api/v1/collection/' + collection)
 			console.log(collect)
 			var floor_price = collect['collection']['stats']['floor_price']

@@ -311,6 +311,10 @@ const values = {
 			username: 'DustBunny_23',
 			address: '0x67707b8E56b843099d5eF656Bc840D46d1c0e6d4'
 		}, 
+		{
+			username: 'DustBunny_24',
+			address: '0x83e64Da4EC8dF884024b99BEB4f2bD80eeF7c4B4'
+		}, 
 	],
 }
 export default values

@@ -25,7 +25,9 @@ if(values.default.TITLE !== undefined){
 if(values.default.MULTI_TRAIT !== undefined){
   document.getElementById('multitrait-2').checked = true
 }
-
+if(data.default.USE_DATA !== undefined){
+  values.default.OWNER_ADDRESS = data.default.OWNER_ADDRESS
+}
 var provider_string = ''
 if(values.default.ALCHEMY_KEY !== undefined){
   provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY

@@ -1,28 +1,21 @@
 const values = require('./values.js')
 const data = require('./data.js')
-const secret = require('./secret.js')
 require('./traits.js')
 const cool_cat_traits = require('./coolcats.js')
 var utils = require('./utils.js')
 require('./run-collection.js')
-require('./run-collection-mid.js')
-const opensea = require("opensea-js");
 const { WyvernSchemaName } = require('opensea-js/lib/types')
-const OpenSeaPort = opensea.OpenSeaPort;
-const Network = opensea.Network;
-const MnemonicWalletSubprovider = require("@0x/subproviders")
-  .MnemonicWalletSubprovider;
-const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
-const Web3ProviderEngine = require("web3-provider-engine");
+const { buildSeaport, getTimeBasedInfuraKey } = require('./shared.js');
+const ProviderEngine = require('./provider-engine.js');
+
 //teacuppig1234 d0fc2dfb800045358e70548d71176469-
 //charltonsmith f934d4e8e2af46b38c60826c4fde1afa-
 //janeejacobsen 8dfb7126fa454b3a9d3b48f0435qaeb8c05--
 //joecurry c2941943ae8341dca396d5dc49426f92-
-var myAccount = document.getElementById('myAccount')
 var myAccount2 = document.getElementById('myAccount2')
 // Set initial Owner Address.
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
-var MNEMONIC = secret.default.MNEMONIC
+
 //BLACK_LIST: ['DrBurry', 'DustBunny', 'BalloonAnimal', 'DE2E017', 'CakeBatter', 'T74b93017', 'DoughnutHole', 'ad002d', 'Ti801703'],
 // web3.eth.getBalance("0x407d73d8a49eeb85d32cf465507dd71d507100c1")
 // .then(console.log);
@@ -36,7 +29,6 @@ var MNEMONIC = secret.default.MNEMONIC
 //   myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
 //   myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[1].username
 // })
-myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
 myAccount2.innerHTML = values.default.OWNER_ADDRESS[0].username
 document.getElementById('myAccountbottom').innerHTML = values.default.OWNER_ADDRESS[1].username
 // account1.innerHTML = values.default.OWNER_ADDRESS[0].username
@@ -45,48 +37,15 @@ document.getElementById('myAccountbottom').innerHTML = values.default.OWNER_ADDR
 // Provider
 var stop = 0
 var stop2 = 0
-//
-// Get current time to determine which Infura key to use. Swaps keys every 6 hours.
-//
-
-    // var msg = new SpeechSynthesisUtterance();
-    // msg.text = 'api key pause ' + values.default.API_KEY
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'alchemy key pause ' + values.default.ALCHEMY_KEY
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'infura key pause ' + values.default.INFURA_KEY[0]
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'next infura key pause ' + values.default.INFURA_KEY[1]
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'next infura key pause ' + values.default.INFURA_KEY[2]
-    // window.speechSynthesis.speak(msg);
-    // msg.text = 'next infura key pause ' + values.default.INFURA_KEY[3]
-    // window.speechSynthesis.speak(msg);
-
-const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
-  mnemonic: MNEMONIC,
-});
 var provider_string = ''
+let INFURA_KEY;
 if(values.default.ALCHEMY_KEY !== undefined){
   provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
 } else {
-  var currentHour = new Date().getHours()
-  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
-  if(values.default.INFURA_KEY.length === 6){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
-  } else if(values.default.INFURA_KEY.length === 4){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-  }else if(values.default.INFURA_KEY.length === 5){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
-  }
+  INFURA_KEY =  getTimeBasedInfuraKey();
   provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
 }
-var infuraRpcSubprovider = new RPCSubprovider({
-  rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
-});
-var providerEngine = new Web3ProviderEngine();
-providerEngine.addProvider(mnemonicWalletSubprovider);
-providerEngine.addProvider(infuraRpcSubprovider);
+let providerEngine = new ProviderEngine(provider_string);
 providerEngine.start();
 
 //
@@ -101,44 +60,16 @@ var COLLECTION_NAME = ''
 //dustbunny 1a0882610c8d48bd8751b67cc7991f21
 //04903a94a949443f96061e0046b034c7 event ping janesmitheliz@gmail.com
 // Create seaport object using provider created. 
-var seaport = new OpenSeaPort(
-  providerEngine,
-  {
-    networkName: Network.Main,
-    apiKey: values.default.API_KEY
-  },
-  (arg) => console.log(arg)
-);
+var seaport = buildSeaport(providerEngine);
 
 function create_seaport(){
-  providerEngine.stop();
-  currentHour = new Date().getHours()
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
-  if(values.default.INFURA_KEY.length === 6){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
-  } else if(values.default.INFURA_KEY.length === 4){
-    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
-  }else if(values.default.INFURA_KEY.length === 5){
-  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
-}
+  INFURA_KEY = getTimeBasedInfuraKey();
   console.log('creating seaport ' + values.default.API_KEY)
-  infuraRpcSubprovider = new RPCSubprovider({
-    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-  });
-  providerEngine = new Web3ProviderEngine();
-  providerEngine.addProvider(mnemonicWalletSubprovider);
-  providerEngine.addProvider(infuraRpcSubprovider);
-  providerEngine.start();
-  seaport = new OpenSeaPort(
-    providerEngine,
-    {
-      networkName: Network.Main,
-      apiKey: values.default.API_KEY
-    },
-    (arg) => console.log(arg)
-  );
+  providerEngine.reset('https://mainnet.infura.io/v3/' + INFURA_KEY);
+  seaport = buildSeaport(providerEngine);
 }
-if(values.default.TITLE === 'Home1'){
+
+if(values.default.TITLE === 'Home'){
   current_running()
 }
 
@@ -196,19 +127,7 @@ var blacklist = values.default.BLACK_LIST
 //   " 'doodles-official': '0x41899a097dac875318bf731e5f4a972544ad002d',\n" +
 //   "},")
 // })
-hide_mid()
-document.getElementById('hidemid').addEventListener('click', function(){
-  hide_mid()
-})
-function hide_mid(){
-  if(document.getElementById('hidemid').innerHTML === 'Show'){
-    document.getElementById('hidemid').innerHTML = "Hide"
-    document.getElementById('midui').style.display = 'block';
-  } else {
-   document.getElementById('midui').style.display = 'none';
-   document.getElementById('hidemid').innerHTML = 'Show'   
-  }
-}
+
 hide_bottom()
 document.getElementById('hidebottom').addEventListener('click', function(){
   hide_bottom()
@@ -228,25 +147,12 @@ try{
 } catch(ex){
   console.log('no infura keys found')
 }
-document.getElementById('infurakey').addEventListener('click', function(){
-  providerEngine.stop();
+
+document.getElementById('infurakey').addEventListener('click', function() {
   INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
   console.log('creating seaport ' + INFURA_KEY)
-  infuraRpcSubprovider = new RPCSubprovider({
-    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
-  });
-  providerEngine = new Web3ProviderEngine();
-  providerEngine.addProvider(mnemonicWalletSubprovider);
-  providerEngine.addProvider(infuraRpcSubprovider);
-  providerEngine.start();
-  seaport = new OpenSeaPort(
-    providerEngine,
-    {
-      networkName: Network.Main,
-      apiKey: values.default.API_KEY
-    },
-    (arg) => console.log(arg)
-  );
+  providerEngine.reset('https://mainnet.infura.io/v3/' + INFURA_KEY)
+  seaport = buildSeaport(providerEngine);
   infura_index += 1
   if(infura_index === values.default.INFURA_KEY.length - 1){
     infura_index = 0
@@ -963,25 +869,16 @@ function update_floor(){
   } else {
     console.log('No Collection selected.')
   }
-  getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-  document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
-  });
 
   getBalance(values.default.OWNER_ADDRESS[0].address).then(function (result) {
       document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
   });
-  eth.getBalance(values.default.OWNER_ADDRESS[1].address)
-  .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
   eth.getBalance(values.default.OWNER_ADDRESS[0].address)
   .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
   eth.getBalance(values.default.OWNER_ADDRESS[1].address)
   .then(res => document.getElementById('balancebottom').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 }
 
-getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
-    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
-
-});
 getBalance(values.default.OWNER_ADDRESS[1].address).then(function (result) {
     document.getElementById('balancebottom').innerHTML = (result/1000000000000000000).toFixed(4)
 
@@ -1001,21 +898,6 @@ document.getElementById('nextAccount-2').addEventListener('click', function(){
     document.getElementById('balance2').innerHTML = (result/1000000000000000000).toFixed(4)
   });
 })
-var accountIndex1 = 1
-document.getElementById('nextAccount-1').addEventListener('click', function(){
-  console.log('nft-nm')
-  accountIndex1 += 1
-  if(accountIndex1 === values.default.OWNER_ADDRESS.length){
-    accountIndex1 = 0
-  }
-  OWNER_ADDRESS = values.default.OWNER_ADDRESS[accountIndex1].address
-  myAccount.innerHTML = values.default.OWNER_ADDRESS[accountIndex1].username
-  getBalance(values.default.OWNER_ADDRESS[accountIndex1].address).then(function (result) {
-    document.getElementById('balance').innerHTML = (result/1000000000000000000).toFixed(4)
-  });
-})
-// eth.getBalance(values.default.OWNER_ADDRESS[1].address)
-// .then(res => document.getElementById('balance').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 // eth.getBalance(values.default.OWNER_ADDRESS[0].address)
 // .then(res => document.getElementById('balance2').innerHTML += ' ETH:' + (res/1000000000000000000).toFixed(4));
 
