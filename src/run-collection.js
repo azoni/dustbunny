@@ -605,6 +605,8 @@ function partition_run(part, length){
 }
 
 function run_json(){
+  text.innerHTML = 'Starting.....'
+
   console.log(COLLECTION_NAME)
   console.log(data.default[COLLECTION_NAME])
   let nft_collection = data.default[COLLECTION_NAME].assets
@@ -623,15 +625,22 @@ function run_json(){
     }
   }
   
-  for(var start = Math.ceil(startEnd[0]); start < Math.ceil(startEnd[1]); start+=1){
-    console.log(start)
-    console.log(nft_collection[start])
-    tokenId_array.push(nft_collection[start].tokenId)
-    name_array.push(nft_collection[start].name)
+  for(var start_value = Math.ceil(startEnd[0]); start_value < Math.ceil(startEnd[1]); start_value+=1){
+    console.log(start_value)
+    console.log(nft_collection[start_value])
+    tokenId_array.push(nft_collection[start_value].tokenId)
+    name_array.push(nft_collection[start_value].name)
   }
   console.log(tokenId_array)
   console.log(name_array)
-
+  assetCount = tokenId_array.length - 1
+  progressBar.max = assetCount
+  pause()
+  reset()
+  start()
+  stop = 0
+  stop2 = 0
+  halt = 0
   placeBid()
   placeBid2()
 }
