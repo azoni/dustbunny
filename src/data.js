@@ -1,5 +1,6 @@
 const values = {
-	TITLE: 'Home',
+	alienfrensnft: require("./collections/alienfrensnft.json"),
+	'cool-cats-nft': require("./collections/cool-cats-nft.json"),
 	DEFAULT_DELAY: 150,
 	//DEFAULT_FRACTION: 'firsthalf',
 	//DEFAULT_FRACTION: 'secondhalf',

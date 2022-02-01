@@ -2,7 +2,7 @@ const values = require('./values.js')
 const data = require('./data.js')
 const secret = require('./secret.js')
 const opensea = require("opensea-js")
-const alienfrensnft = require("./collections/alienfrensnft.json")
+
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
@@ -383,7 +383,7 @@ quickButton.addEventListener('click', function(){
   increaseBid.disabled = false
   increaseBid1.disabled = false
   progressBar.max = assetCount
-  if(COLLECTION_NAME === "alienfrensnft"){
+  if(Object.keys(data.default).includes(COLLECTION_NAME)){
     run_json()
   } else{
     run()
@@ -549,18 +549,91 @@ text1.style.fontSize = '20px'
 ///********************************************************************************
 ///This function is responsible for generating the assets to be bid on. 
 ///Ex. multi trait bidding, fractional runs on set.
-function run_json(){
-  console.log(alienfrensnft)
-  // data = read_assets(COLLECTION_NAME)
+function partition_run(part, length){
+  var start = 0
+  var end = 0
 
-  for(var alien of alienfrensnft.assets){
-    tokenId_array.push(alien.tokenId)
-    name_array.push(alien.name)
+  if(part === 'firsthalf'){
+    start = 0
+    end = length/2
+  } else if (part === 'secondhalf') {
+    start = length/2
+    end = length
+  } 
+
+  else if (part === 'firstquarter') {
+    start = 0
+    end = length/4
+  } else if (part === 'secondquarter') {
+    start = length/4
+    end = length/4 + length/4
+  } else if (part === 'thirdquarter') {
+    start = length/4 + length/4
+    end = length/4 + length/4 + length/4
+  } else if (part === 'fourthquarter') {
+    start = length/4 + length/4 + length/4
+    end = length
+  } 
+
+  else if (part === 'firsteighth') {
+    start = 0
+    end = length/8
+  } else if (part === 'secondeighth') {
+    start = length/8
+    end = length/8 + length/8
+  } else if (part === 'thirdeighth') {
+    start = length/8 + length/8
+    end = length/8 + length/8 + length/8
+  } else if (part === 'fourtheighth') {
+    start = length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8
+  } else if (part === 'fiftheighth') {
+    start = length/8 + length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8 + length/8
+  } else if (part === 'sixtheighth') {
+    start = length/8 + length/8 + length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8 + length/8 + length/8
+  } else if (part === 'seventheighth') {
+    start = length/8 + length/8 + length/8 + length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8 + length/8 + length/8 + length/8
+  } else if (part === 'eightheighth') {
+    start = length/8 + length/8 + length/8 + length/8 + length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8 + length/8 + length/8 + length/8 + length/8
   }
-  // console.log(tokenId_array)
-  // console.log(name_array)
-  placeBid()
-  placeBid2()
+
+  return [start, end]
+}
+
+function run_json(){
+  console.log(COLLECTION_NAME)
+  console.log(data.default[COLLECTION_NAME])
+  let nft_collection = data.default[COLLECTION_NAME].assets
+  // data = read_assets(COLLECTION_NAME)
+  let partitions = ['firsthalf', 'secondhalf', 'firstquarter', 'secondquarter', 'thirdquarter', 'fourthquarter', 'firsteighth', 'secondeighth', 
+                    'thirdeighth', 'fourtheighth', 'fiftheighth', 'sixtheighth', 'seventheighth', 'eightheighth']
+
+  for(var part of partitions){
+    console.log(document.getElementById(part).checked)
+
+    if(document.getElementById(part).checked === true){
+      var startEnd = partition_run(part, nft_collection.length)
+      break
+    } else {
+      startEnd = [0, nft_collection.length]
+    }
+  }
+  
+  for(var start = Math.ceil(startEnd[0]); start < Math.ceil(startEnd[1]); start+=1){
+    console.log(start)
+    console.log(nft_collection[start])
+    tokenId_array.push(nft_collection[start].tokenId)
+    name_array.push(nft_collection[start].name)
+  }
+  console.log(tokenId_array)
+  console.log(name_array)
+
+  // placeBid()
+  // placeBid2()
 }
 
 async function run() {
