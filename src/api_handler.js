@@ -17,27 +17,27 @@ var seaport = new OpenSeaPort(
   (arg) => console.log(arg)
 );
 
-function get_traits_floor(traits){
-	for(asset in assets){
-		if(asset){
+// function get_traits_floor(traits){
+// 	for(asset in assets){
+// 		if(asset){
 
-		}
-	}
-}
+// 		}
+// 	}
+// }
 
-async function get_listed_asset(slug){
-	var listed_assets = []
-	var assets = await get_assets(slug)
-	console.log(assets)
+// async function get_listed_asset(slug){
+// 	var listed_assets = []
+// 	var assets = await get_assets(slug)
+// 	console.log(assets)
 
-	for(asset in assets){
-		if(assets[asset].sellOrders !== null){
+// 	for(asset in assets){
+// 		if(assets[asset].sellOrders !== null){
 
-		}
-	}
+// 		}
+// 	}
 
-	return listed_assets
-}
+// 	return listed_assets
+// }
 
 async function get_collection(slug){
 	try{
@@ -114,8 +114,9 @@ async function read_assets(slug){
 	var path = './collections/' + slug + '.json'
 	var asset_data = fs.readFileSync(path, "utf8")
 	asset_data = JSON.parse(asset_data.toString())
-	console.log(asset_data)
-	console.log(asset_data.assets.length)
+	// console.log(asset_data)
+	// console.log(asset_data.assets.length)
+	return asset_data
 }
 
 
@@ -124,8 +125,10 @@ console.log('Test')
 async function main(){
 	//var assets = await get_assets('cool-cats-nft')
 	//console.log(assets)
-	write_assets('alienfrensnft')
-	//read_assets('cool-cats-nft')
+	//write_assets('alienfrensnft')
+	var alien = await read_assets('alienfrensnft')
+	console.log(alien.assets[0].tokenId)
+
 }
 
 main()

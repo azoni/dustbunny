@@ -1,7 +1,6 @@
 const values = require('./values.js')
 const data = require('./data.js')
 require('./traits.js')
-const cool_cat_traits = require('./coolcats.js')
 var utils = require('./utils.js')
 require('./run-collection.js')
 const { WyvernSchemaName } = require('opensea-js/lib/types')
@@ -29,7 +28,7 @@ var OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
 //   myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
 //   myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[1].username
 // })
-myAccount2.innerHTML = values.default.OWNER_ADDRESS[0].username
+myAccount2.innerHTML = values.default.OWNER_ADDRESS[0].usernamedata
 document.getElementById('myAccountbottom').innerHTML = values.default.OWNER_ADDRESS[1].username
 // account1.innerHTML = values.default.OWNER_ADDRESS[0].username
 // account2.innerHTML = values.default.OWNER_ADDRESS[1].username
@@ -69,7 +68,7 @@ function create_seaport(){
   seaport = buildSeaport(providerEngine);
 }
 
-if(values.default.TITLE === 'Home'){
+if(values.default.TITLE === 'Home2'){
   current_running()
 }
 
@@ -1143,31 +1142,6 @@ async function getCollection(collectionName){
   collectionName = collectionName.trim()
   console.log(collectionName)
   var collect = getCollectionDetails(collectionName)
-          if(collectionName === 'cool-cats-nfts'){
-      
-      for(var i in cool_cat_traits.default.traits){
-        console.log(cool_cat_traits.default.traits[i])
-        var traitDiv = document.getElementById('traitsDiv')
-        var property = document.createElement('input')
-        var trait = document.createElement('input')
-        var traitbid = document.createElement('input')
-        property.value = cool_cat_traits.default.traits[i][0]
-        trait.value = cool_cat_traits.default.traits[i][1]
-        trait.id = 'trait' + traits_count
-        trait.style.width = '100px'
-        property.id = 'property' + traits_count
-        property.style.width = '100px'
-        traitbid.id = 'bid' + traits_count
-        traitbid.style.width = '40px'
-
-        var br = document.createElement('br')
-        traitDiv.appendChild(property)
-        traitDiv.appendChild(trait)
-        traitDiv.appendChild(traitbid)
-        traitDiv.appendChild(br)
-        traits_count += 1
-      }
-    }
   collect.then(function(collect){
   try { 
       COLLECTION_NAME = collectionName

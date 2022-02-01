@@ -2,6 +2,7 @@ const values = require('./values.js')
 const data = require('./data.js')
 const secret = require('./secret.js')
 const opensea = require("opensea-js")
+const alienfrensnft = require("./collections/alienfrensnft.json")
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
@@ -382,7 +383,12 @@ quickButton.addEventListener('click', function(){
   increaseBid.disabled = false
   increaseBid1.disabled = false
   progressBar.max = assetCount
-  run()
+  if(COLLECTION_NAME === "alienfrensnft"){
+    run_json()
+  } else{
+    run()
+  }
+  
 })
 document.getElementById('smartStart-2').addEventListener('click', function(){
   test_bid()
@@ -539,12 +545,25 @@ function update_floor(){
 text.style.fontSize = '20px'
 text1.style.fontSize = '20px'
 // var midrun = false
-
 ///////////////////////////////////////////////////////////////////////////////////
 ///********************************************************************************
 ///This function is responsible for generating the assets to be bid on. 
 ///Ex. multi trait bidding, fractional runs on set.
-async function run(){
+function run_json(){
+  console.log(alienfrensnft)
+  // data = read_assets(COLLECTION_NAME)
+
+  for(var alien of alienfrensnft.assets){
+    tokenId_array.push(alien.tokenId)
+    name_array.push(alien.name)
+  }
+  // console.log(tokenId_array)
+  // console.log(name_array)
+  placeBid()
+  placeBid2()
+}
+
+async function run() {
   if(document.getElementById('delayStart-2').value !== ''){
     text.innerHTML = 'Starting in ' + document.getElementById('delayStart-2').value + ' minutes.'
     await new Promise(resolve => setTimeout(resolve, document.getElementById('delayStart-2').value * 60000));
