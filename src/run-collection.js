@@ -6,6 +6,9 @@ const opensea = require("opensea-js")
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
+if(values.default.USE_DATA !== undefined){
+  values.default.OWNER_ADDRESS = data.default.OWNER_ADDRESS
+}
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 values.default.EVENT_WALLET = OWNER_ADDRESS
 // Provider
@@ -26,9 +29,7 @@ if(values.default.TITLE !== undefined){
 if(values.default.MULTI_TRAIT !== undefined){
   document.getElementById('multitrait-2').checked = true
 }
-if(data.default.USE_DATA !== undefined){
-  values.default.OWNER_ADDRESS = data.default.OWNER_ADDRESS
-}
+
 var provider_string = ''
 if(values.default.ALCHEMY_KEY !== undefined){
   provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
@@ -465,6 +466,10 @@ confirmButton.addEventListener('click', function(){
   }
    if (offerAmount === ''){
     alert('No bid entered.')
+    return
+  }
+  if (document.getElementById('absolute-max').value === ''){
+    alert('Enter Absolute Max.')
     return
   }
   quickButton.disabled = false
@@ -1132,12 +1137,15 @@ async function placeBid(){
         placebidoffer = .001 + parseFloat(highestBid)
       }
      }
+     if(document.getElementById('multitraitflat-2').checked === true){
+      placebidoffer = asset_dict[tokenId_array[i]][2]
+     }
     }
     try{
-      if(parseFloat(placebidoffer) > parseFloat(values.default.ABSOLUTE_MAX)){
-        document.getElementById('repeat-2').checked = false
+
+      if(parseFloat(placebidoffer) > parseFloat(document.getElementById('absolute-max').value)){
         text.style.color = 'red'
-        text.innerHTML = 'Something went horribly wrong.. ' + name_array[i] + ' ' + placebidoffer
+        text.innerHTML = 'Floor above bid! ' + name_array[i] + ' ' + placebidoffer
         beep()
         beep()
         beep()
@@ -1153,7 +1161,8 @@ async function placeBid(){
         beep()
         beep()
         beep()
-        break
+        await new Promise(resolve => setTimeout(resolve, 30000))
+        continue
       }
       await seaport.createBuyOrder({
         asset,
@@ -1321,12 +1330,14 @@ async function placeBid2(){
         placebid2offer = .001 + parseFloat(highestBid)
       }
      }
+     if(document.getElementById('multitraitflat-2').checked === true){
+      placebid2offer = asset_dict[tokenId_array[i]][2]
+     }
     }
     try{
-      if(parseFloat(placebid2offer) > parseFloat(values.default.ABSOLUTE_MAX)){
-        document.getElementById('repeat-2').checked = false
+      if(parseFloat(placebid2offer) > parseFloat(document.getElementById('absolute-max').value)){
         text.style.color = 'red'
-        text.innerHTML = 'Something went horribly wrong.. ' + name_array[i] + ' ' + placebid2offer
+        text.innerHTML = 'Floor above bid! ' + name_array[i] + ' ' + placebid2offer
         beep()
         beep()
         beep()
@@ -1342,7 +1353,8 @@ async function placeBid2(){
         beep()
         beep()
         beep()
-        break
+        await new Promise(resolve => setTimeout(resolve, 30000))
+        continue
       }
       await seaport.createBuyOrder({
         asset,

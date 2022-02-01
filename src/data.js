@@ -28,12 +28,12 @@ const values = {
 			'tier': {
 				// 'cool_1': [.7,.8],
 				// 'cool_2': [.7, .825],
-				'wild_1': [.9,.925],
-				'wild_2': [1,1.05],
-				'classy_1': [1.05 ,1.1],
-				'classy_2': [1.1, 1.2],
-				'exotic_1': [1.2,1.3],
-				'exotic_2': [1.5,1.6],
+				'wild_1': [.9,.925, 10],
+				'wild_2': [1,1.05, 11],
+				'classy_1': [1.05 ,1.1, 12],
+				'classy_2': [1.1, 1.2, 13],
+				'exotic_1': [1.2,1.3, 14],
+				'exotic_2': [1.5,1.6, 15],
 			},
 			'face': {
 				'tvface': [1.5, 2],
@@ -315,6 +315,18 @@ const values = {
 		{
 			username: 'DustBunny_24',
 			address: '0x83e64Da4EC8dF884024b99BEB4f2bD80eeF7c4B4'
+		},
+		{
+			username: 'DustBunny_25',
+			address: '0x9208D24917eaE55C79e90255ED79b79C292109a3'
+		}, 
+		{
+			username: 'DustBunny_26',
+			address: '0x899c762C3500AcC6b1d8CF14e2f492fa5B798052'
+		}, 
+		{
+			username: 'DustBunny_27',
+			address: '0x0a6Ae359E2dB55ACa4537f950BE13A73F461cEAA'
 		}, 
 	],
 }

@@ -6,7 +6,9 @@ require('./run-collection.js')
 const { WyvernSchemaName } = require('opensea-js/lib/types')
 const { buildSeaport, getTimeBasedInfuraKey } = require('./shared.js');
 const ProviderEngine = require('./provider-engine.js');
-
+if(values.default.USE_DATA !== undefined){
+  values.default.OWNER_ADDRESS = data.default.OWNER_ADDRESS
+}
 //teacuppig1234 d0fc2dfb800045358e70548d71176469-
 //charltonsmith f934d4e8e2af46b38c60826c4fde1afa-
 //janeejacobsen 8dfb7126fa454b3a9d3b48f0435qaeb8c05--
@@ -28,7 +30,7 @@ var OWNER_ADDRESS = values.default.OWNER_ADDRESS[1].address
 //   myAccount.innerHTML = values.default.OWNER_ADDRESS[1].username
 //   myAccount.href = 'https://opensea.io/' + values.default.OWNER_ADDRESS[1].username
 // })
-myAccount2.innerHTML = values.default.OWNER_ADDRESS[0].usernamedata
+myAccount2.innerHTML = values.default.OWNER_ADDRESS[0].username
 document.getElementById('myAccountbottom').innerHTML = values.default.OWNER_ADDRESS[1].username
 // account1.innerHTML = values.default.OWNER_ADDRESS[0].username
 // account2.innerHTML = values.default.OWNER_ADDRESS[1].username
