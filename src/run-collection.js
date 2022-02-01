@@ -632,8 +632,8 @@ function run_json(){
   console.log(tokenId_array)
   console.log(name_array)
 
-  // placeBid()
-  // placeBid2()
+  placeBid()
+  placeBid2()
 }
 
 async function run() {
