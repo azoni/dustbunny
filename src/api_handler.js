@@ -90,6 +90,7 @@ async function write_assets(slug){
 			'offset': offset,
 			'limit': limit,
 		})
+		//Check for null. Ex. colection 10,000 assets, storing 10,050
 		assets.assets.forEach((asset) =>{
 			assets_list.push(asset)
 		})
@@ -100,6 +101,7 @@ async function write_assets(slug){
 	} while(assets_length === 50)
 
 	assets_dict['assets'] = assets_list
+	console.log(assets_dict['assets'][0])
 	const data = JSON.stringify(assets_dict);
 
 	fs.writeFile(path, data, (err) => {
@@ -119,16 +121,20 @@ async function read_assets(slug){
 	return asset_data
 }
 
+//Asset object, BidAmount, Expiration
+async function bid_asset_list(){
 
-console.log('Test')
+}
+
+//TokenId, TokenAddress, BidAmount, Expiration
+async function bid_single_collection(){
+
+}
 
 async function main(){
 	//var assets = await get_assets('cool-cats-nft')
 	//console.log(assets)
-	//write_assets('alienfrensnft')
-	var alien = await read_assets('alienfrensnft')
-	console.log(alien.assets[0].tokenId)
-
+	write_assets('dapperdinosnft')
 }
 
 main()

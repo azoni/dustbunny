@@ -70,7 +70,7 @@ function create_seaport(){
   seaport = buildSeaport(providerEngine);
 }
 
-if(values.default.TITLE === 'Home2'){
+if(values.default.TITLE === 'Home'){
   current_running()
 }
 
@@ -1073,6 +1073,34 @@ getBalance('0x67707b8E56b843099d5eF656Bc840D46d1c0e6d4').then(function (result) 
       console.log('DustBunny_23: ' + (result/1000000000000000000).toFixed(4))
     }
     eth.getBalance('0x67707b8E56b843099d5eF656Bc840D46d1c0e6d4').then(res => total_eth += parseInt(res))
+    total_weth += parseInt(result)
+});
+getBalance('0x83e64Da4EC8dF884024b99BEB4f2bD80eeF7c4B4').then(function (result) {
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
+      console.log('DustBunny_24: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x83e64Da4EC8dF884024b99BEB4f2bD80eeF7c4B4').then(res => total_eth += parseInt(res))
+    total_weth += parseInt(result)
+});
+getBalance('0x9208D24917eaE55C79e90255ED79b79C292109a3').then(function (result) {
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
+      console.log('DustBunny_25: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x9208D24917eaE55C79e90255ED79b79C292109a3').then(res => total_eth += parseInt(res))
+    total_weth += parseInt(result)
+});
+getBalance('0x899c762C3500AcC6b1d8CF14e2f492fa5B798052').then(function (result) {
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
+      console.log('DustBunny_26: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x899c762C3500AcC6b1d8CF14e2f492fa5B798052').then(res => total_eth += parseInt(res))
+    total_weth += parseInt(result)
+});
+getBalance('0x0a6Ae359E2dB55ACa4537f950BE13A73F461cEAA').then(function (result) {
+    if(parseFloat(result/1000000000000000000) > parseFloat(0.011)){
+      console.log('DustBunny_27: ' + (result/1000000000000000000).toFixed(4))
+    }
+    eth.getBalance('0x0a6Ae359E2dB55ACa4537f950BE13A73F461cEAA').then(res => total_eth += parseInt(res))
     total_weth += parseInt(result)
 });
 //
