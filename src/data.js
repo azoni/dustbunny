@@ -1,5 +1,10 @@
 const values = {
 	alienfrensnft: require("./collections/alienfrensnft.json"),
+	bubblegumkids: require("./collections/bubblegumkids.json"),
+	dapperdinosnft: require("./collections/dapperdinosnft.json"),
+	killergf: require("./collections/killergf.json"),
+	livesofasuna: require("./collections/livesofasuna.json"),
+	winterbears: require("./collections/winterbears.json"),
 	'cool-cats-nft': require("./collections/cool-cats-nft.json"),
 	DEFAULT_DELAY: 150,
 	//DEFAULT_FRACTION: 'firsthalf',
