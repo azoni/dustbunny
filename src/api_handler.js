@@ -92,6 +92,8 @@ async function write_assets(slug){
 		})
 		//Check for null. Ex. colection 10,000 assets, storing 10,050
 		assets.assets.forEach((asset) =>{
+			var trimmed_asset = {}
+
 			assets_list.push(asset)
 		})
 		assets_length = assets.assets.length
@@ -134,7 +136,7 @@ async function bid_single_collection(){
 async function main(){
 	//var assets = await get_assets('cool-cats-nft')
 	//console.log(assets)
-	write_assets('dapperdinosnft')
+	write_assets('thelittlesnft')
 }
 
 main()
