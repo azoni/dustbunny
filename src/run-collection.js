@@ -2,7 +2,6 @@ const values = require('./values.js')
 const data = require('./data.js')
 const secret = require('./secret.js')
 const opensea = require("opensea-js")
-
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
@@ -384,11 +383,13 @@ quickButton.addEventListener('click', function(){
   increaseBid.disabled = false
   increaseBid1.disabled = false
   progressBar.max = assetCount
-  if(data.default.COLLECTIONS.includes(COLLECTION_NAME)){
+  try {
+    require('./collections/' + COLLECTION_NAME + '.json')
     run_json()
-  } else{
+  } catch (e){
     run()
   }
+
   
 })
 document.getElementById('testall-2').addEventListener('click', async function(){

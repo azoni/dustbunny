@@ -1,8 +1,4 @@
 const values = {
-	COLLECTIONS: ['alienfrensnft', 'bubblegumkids', 'dapperdinosnft', 'killergf', 'livesofasuna', 'winterbears',
-	'cool-cats-nft', 'lazy-lions', 'sneaky-vampire-syndicate', 'deadfellaz', 'pudgypenguins', 'supducks', 'mekaverse'
-	, '', '', '', '', '', '', '', '', 
-	'', '', '', '', '', '', '', '', '', ''],
 	DEFAULT_DELAY: 150,
 	//DEFAULT_FRACTION: 'firsthalf',
 	//DEFAULT_FRACTION: 'secondhalf',
