@@ -74,7 +74,7 @@ async function get_assets(slug){
 }
 
 // 
-async function write_assets(slug){
+async function write_assets(slug, total_assets){
 	// if slug exists call from json
 	// else opensea api call
 	var path = './collections/' + slug + '.json'
@@ -83,27 +83,48 @@ async function write_assets(slug){
 	var assets_length = 0
 	var assets_dict = {}
 	var assets_list = []
-
+	var direction = 'asc'
+	var temp_offset = 0
+	var invalid = 0
 	do {
 		var assets = await seaport.api.getAssets({
 			'collection': slug,
 			'offset': offset,
 			'limit': limit,
+			'order_direction': direction
 		})
 		//Check for null. Ex. colection 10,000 assets, storing 10,050
 		assets.assets.forEach((asset) =>{
 			var trimmed_asset = {}
-
-			assets_list.push(asset)
+			trimmed_asset['tokenId'] = asset['tokenId']
+			trimmed_asset['traits'] = asset['traits']
+			trimmed_asset['name'] = asset['name']
+			trimmed_asset['tokenAddress'] = asset['tokenAddress']
+			trimmed_asset['imageUrl'] = asset['imageUrl']
+			if(asset['imageUrl'] !== ''){
+				assets_list.push(trimmed_asset)
+			} else {
+				console.log("Asset doesn't exist")
+				invalid += 1
+			}
+			
 		})
 		assets_length = assets.assets.length
 		//console.log(assets_list)
 		offset += 50
-		console.log(offset)
-	} while(assets_length === 50)
+		if(offset === 10000){
+			temp_offset = 10000
+			offset = 0
+			direction = 'desc'
+		}
+		if(total_assets - temp_offset - offset < 50){
+			limit = total_assets - offset - temp_offset
+		}
+		console.log(assets_list.length)
+	} while(assets_list.length < total_assets - invalid)
 
 	assets_dict['assets'] = assets_list
-	console.log(assets_dict['assets'][0])
+	console.log(assets_dict['assets'][total_assets - invalid - 1])
 	const data = JSON.stringify(assets_dict);
 
 	fs.writeFile(path, data, (err) => {
@@ -132,11 +153,31 @@ async function bid_asset_list(){
 async function bid_single_collection(){
 
 }
+//dev_seller_fee_basis_points
+//image_url
+//stats
+async function getCollectionDetails(collectionName){
+  try{
+    const collect = await seaport.api.get('/api/v1/collection/' + collectionName)
+	temp_collect = {}
+
+	temp_collect[''] = collect['']
+
+
+    return collect
+  } catch (ex) {
+    console.log("couldn't get collection")
+  }  
+}
 
 async function main(){
+	var slug = 'mekaverse'
 	//var assets = await get_assets('cool-cats-nft')
 	//console.log(assets)
-	write_assets('thelittlesnft')
+	//write_assets('lazy-lions', 10080)
+	var collect = await getCollectionDetails(slug)
+
+	write_assets(slug, collect.collection.stats.total_supply)
 }
 
 main()

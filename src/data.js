@@ -1,11 +1,8 @@
 const values = {
-	alienfrensnft: require("./collections/alienfrensnft.json"),
-	bubblegumkids: require("./collections/bubblegumkids.json"),
-	dapperdinosnft: require("./collections/dapperdinosnft.json"),
-	killergf: require("./collections/killergf.json"),
-	livesofasuna: require("./collections/livesofasuna.json"),
-	winterbears: require("./collections/winterbears.json"),
-	'cool-cats-nft': require("./collections/cool-cats-nft.json"),
+	COLLECTIONS: ['alienfrensnft', 'bubblegumkids', 'dapperdinosnft', 'killergf', 'livesofasuna', 'winterbears',
+	'cool-cats-nft', 'lazy-lions', 'sneaky-vampire-syndicate', 'deadfellaz', 'pudgypenguins', 'supducks', 'mekaverse'
+	, '', '', '', '', '', '', '', '', 
+	'', '', '', '', '', '', '', '', '', ''],
 	DEFAULT_DELAY: 150,
 	//DEFAULT_FRACTION: 'firsthalf',
 	//DEFAULT_FRACTION: 'secondhalf',

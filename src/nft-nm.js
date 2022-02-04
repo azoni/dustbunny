@@ -70,7 +70,7 @@ function create_seaport(){
   seaport = buildSeaport(providerEngine);
 }
 
-if(values.default.TITLE === 'Home'){
+if(values.default.TITLE === 'Home2'){
   current_running()
 }
 
@@ -857,6 +857,7 @@ document.getElementById('update_floor').addEventListener('click', function(){
   update_floor()
 })
 function update_floor(){
+  current_running()
   if(COLLECTION_NAME !== ''){
     getFloorPrice().then(function (collect){
       try{

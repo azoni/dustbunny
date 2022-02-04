@@ -384,20 +384,31 @@ quickButton.addEventListener('click', function(){
   increaseBid.disabled = false
   increaseBid1.disabled = false
   progressBar.max = assetCount
-  if(Object.keys(data.default).includes(COLLECTION_NAME)){
+  if(data.default.COLLECTIONS.includes(COLLECTION_NAME)){
     run_json()
   } else{
     run()
   }
   
 })
-document.getElementById('smartStart-2').addEventListener('click', function(){
-  test_bid()
+document.getElementById('testall-2').addEventListener('click', async function(){
+  for(var address of data.default.OWNER_ADDRESS){
+    var success = await test_bid(address.address)
+    console.log(address.username + ' ' + success)
+  }
+  
 })
-async function test_bid(){
+document.getElementById('smartStart-2').addEventListener('click', function(){
+  test_bid(1)
+})
+
+async function test_bid(address){
+  if(address === 1){
+    address = address
+  }
   var asset = {
-    tokenId: '1690',
-    tokenAddress: '0x1cb1a5e65610aeff2551a50f76a87a7d3fb649c6',
+    tokenId: '8573',
+    tokenAddress: '0x24998f0a028d197413ef57c7810f7a5ef8b9fa55',
     //schemaName: WyvernSchemaName.ERC1155
   }
   try{
@@ -407,19 +418,18 @@ async function test_bid(){
     await seaport.createBuyOrder({
       asset,
       startAmount: .0001,
-      accountAddress: OWNER_ADDRESS,
+      accountAddress: address,
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .01),
     })
     text.style.color = 'black'
     text.innerHTML = 'Bid Successful'
-
+    return 'success'
   } catch(ex){
-    console.log(ex)
-    console.log(ex.message)
     text.style.color = 'red'
     text.innerHTML = ex.message
   }
   providerEngine.stop()
+  return 'fail'
 }
 
 var offersDict = {}
@@ -613,8 +623,8 @@ function run_json(){
   text.innerHTML = 'Starting.....'
 
   console.log(COLLECTION_NAME)
-  console.log(data.default[COLLECTION_NAME])
-  let nft_collection = data.default[COLLECTION_NAME].assets
+  const nft_collection = require("./collections/" + COLLECTION_NAME + ".json").assets
+  console.log(nft_collection)
   // data = read_assets(COLLECTION_NAME)
   let partitions = ['firsthalf', 'secondhalf', 'firstquarter', 'secondquarter', 'thirdquarter', 'fourthquarter', 'firsteighth', 'secondeighth', 
                     'thirdeighth', 'fourtheighth', 'fiftheighth', 'sixtheighth', 'seventheighth', 'eightheighth']
