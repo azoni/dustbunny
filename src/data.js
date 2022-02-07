@@ -1,5 +1,4 @@
 const values = {
-	TITLE: 'Home',
 	DEFAULT_DELAY: 150,
 	//DEFAULT_FRACTION: 'firsthalf',
 	//DEFAULT_FRACTION: 'secondhalf',
@@ -27,12 +26,12 @@ const values = {
 			'tier': {
 				// 'cool_1': [.7,.8],
 				// 'cool_2': [.7, .825],
-				'wild_1': [.9,.925],
-				'wild_2': [1,1.05],
-				'classy_1': [1.05 ,1.1],
-				'classy_2': [1.1, 1.2],
-				'exotic_1': [1.2,1.3],
-				'exotic_2': [1.5,1.6],
+				'wild_1': [.9,.925, 10],
+				'wild_2': [1,1.05, 11],
+				'classy_1': [1.05 ,1.1, 12],
+				'classy_2': [1.1, 1.2, 13],
+				'exotic_1': [1.2,1.3, 14],
+				'exotic_2': [1.5,1.6, 15],
 			},
 			'face': {
 				'tvface': [1.5, 2],
@@ -75,59 +74,59 @@ const values = {
 		},
 		'doodles-official': {
 			'face': {
-				'neutral note': [.8, .925],
-				'mad note': [.85, .95],
-				'sad note': [.775, .95],
-				'skelton': [.95, 1],
-				'rainbow puke': [1.5, 2.1],
-				'puffer up': [2.5, 3.1],
-				'ape': [2.5, 3.1],
-				'shark': [2.5, 3],
-				'duck': [2.5, 3],
-				'skelly cig': [4, 5.1],
-				'alien': [3.5, 5.1],
-				'dino': [3.5, 5.1],
-				'cat': [4, 6.1],
+				// 'neutral note': [.8, .925],
+				// 'mad note': [.85, .95],
+				// 'sad note': [.775, .95],
+				// 'skelton': [.95, 1],
+				'rainbow puke': [2.52, 2.26],
+				'puffer up': [3, 3.5],
+				'ape': [4.25, 4.1],
+				'shark': [4.15, 4.25],
+				'duck': [4.15, 4.25],
+				'skelly cig': [5.5, 5.6],
+				'alien': [7, 6.1],
+				'dino': [5.76, 6],
+				'cat': [7, 7.1],
 				'holographic visor': [5, 5.1],
-				'whale': [4.1, 5.2],
+				'whale': [8, 8.2],
 			},
-			'body': {
-				'blazer': [.9, .95],
-				'leopard hoodie': [1.1, 1.2],
-				'rainbow striped sweater': [1, 1.1],
-				'spotted': [1, 1.1],
-				'holographic sweater': [1, 1.1],
-			},
+			// 'body': {
+			// 	'blazer': [.9, .95],
+			// 	'leopard hoodie': [1.1, 1.2],
+			// 	'rainbow striped sweater': [1, 1.1],
+			// 	'spotted': [1, 1.1],
+			// 	'holographic sweater': [1, 1.1],
+			// },
 			'head': {
-				'balloon': [2.25, 2.6],
-				'devil': [1.75, 2],
-				'pickle': [2, 2.1],
-				'flower': [2, 2.1],
-				'coffee': [2.75, 3.1],
-				'lit': [2, 2.1],
+				'balloon': [2.75, 3],
+				'devil': [1.85, 1.9],
+				'pickle': [2.25, 2.5],
+				'flower': [2.25, 2.5],
+				'coffee': [3.25, 3.3],
+				'lit': [2.5, 2.75],
 				'rainbow': [2.5, 3.1],
-				'popsicle': [2.75, 3.1],
-				'icecream': [2.75, 3.1],
+				'popsicle': [2.75, 2.9],
+				'icecream': [3.25, 3.3],
 
 			},
-			'background': {
-				'space': [.9,.925],
-				'sky': [.9,.925],
-				'fire': [.9,.925],
-				// 'holographic': [.8,.925],
-				// 'iridescent': [.8,.925],
-			},
-			'hair': {
-				'sailor': [1.1, 1.2],
-				'poopie': [1, 1.1],
-				'crown': [1.1, 1.2],
-				'wizard': [1.1, 1.2],
-				'helmet': [.925, .95],
-				'holographic crown': [1.2, 2],
-			},
-			'piercing': {
-				'airpod': [.925, .95],
-			},
+			// 'background': {
+			// 	'space': [.9,.925],
+			// 	'sky': [.9,.925],
+			// 	'fire': [.9,.925],
+			// 	// 'holographic': [.8,.925],
+			// 	// 'iridescent': [.8,.925],
+			// },
+			// 'hair': {
+			// 	'sailor': [1.1, 1.2],
+			// 	'poopie': [1, 1.1],
+			// 	'crown': [1.1, 1.2],
+			// 	'wizard': [1.1, 1.2],
+			// 	'helmet': [.925, .95],
+			// 	'holographic crown': [1.2, 2],
+			// },
+			// 'piercing': {
+			// 	'airpod': [.925, .95],
+			// },
 			
 		},
 		'cryptoadz-by-gremplin': {
@@ -174,14 +173,19 @@ const values = {
 		},
 		'larva-lads': {
 			'type': {
-				'alien': [22.5, 2, .2],
-				'zombie': [7.5, 1.1, .1],
-				'ape': [10,2]
+				'alien': [10, 2, .2],
+				'zombie': [4, 1.1, .1],
+				'ape': [5,2]
 			},
 		},
 		'mutant-ape-yacht-club': {
 			'background': {
 				'm2': [1.2, 1.3],
+			}
+		},
+		'boredapeyachtclub': {
+			'clothes': {
+				'dress': [.6, .75],
 			}
 		},
 	},
@@ -193,6 +197,7 @@ const values = {
 		'clonex',
 		'cryptoadz-by-gremplin',
 	],
+	BACY: '0x5ea09d2E44759C46F8F2a884815B6bD06dcA440F',
 	WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
 	 'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 
 	 'bored-ape-kennel-club', 'desperate-ape-wives', 'bears-deluxe-new',
@@ -201,7 +206,7 @@ const values = {
 	 'deadfellaz', 'lazy-lions', 'pudgypenguins', 'forgottenruneswizardscult',
 	 'supducks', 'the-doge-pound', 'cyberkongz-vx', 'lootproject'
 	 ],
-	WATCH_LIST_LOW: ['meebits', 'lootproject'],
+	WATCH_LIST_LOW: ['meebits', 'lootproject', 'boredapeyachtclub'],
 	COMP_WALLETS: [//'0x0ecbba0ccb440e0d396456bacdb3ce2a716b96e5',
 	'0x3a6ae92bc396f818d87e60b0d3475ebf37b9c2ea', ],
 	// '0x701c1a9d3fc47f7949178c99b141c86fac72a1c4',], 
@@ -304,6 +309,22 @@ const values = {
 		{
 			username: 'DustBunny_23',
 			address: '0x67707b8E56b843099d5eF656Bc840D46d1c0e6d4'
+		}, 
+		{
+			username: 'DustBunny_24',
+			address: '0x83e64Da4EC8dF884024b99BEB4f2bD80eeF7c4B4'
+		},
+		{
+			username: 'DustBunny_25',
+			address: '0x9208D24917eaE55C79e90255ED79b79C292109a3'
+		}, 
+		{
+			username: 'DustBunny_26',
+			address: '0x899c762C3500AcC6b1d8CF14e2f492fa5B798052'
+		}, 
+		{
+			username: 'DustBunny_27',
+			address: '0x0a6Ae359E2dB55ACa4537f950BE13A73F461cEAA'
 		}, 
 	],
 }

@@ -98,7 +98,8 @@
           <input id='upbidincrement-2' placeholder='.001' style="width:40px">
           Exp:
           <input id='expireInput-2' style="width:20px" placeholder='1'></input>
-
+          ABS MAX:
+          <input id='absolute-max' style="width:20px" placeholder='5.5'></input>
           <br><br>
           Delay:
           <input id='delayStart-2' placeholder="20" style="width: 20px;"></input>min
@@ -107,6 +108,8 @@
           
                     Listed<input id='sellOrder-2' type='checkbox' style="width: 25px;"></input>< Floor * 
           <input id='aboveFloor-2' placeholder="1.2" style="width: 25px;"></input>
+          First half<input id='firsthalfhalf' type='checkbox'></input>
+          Second half<input id='secondhalfhalf' type='checkbox'></input>
           <br><br>
           1/2<input id='firsthalf' type='checkbox'></input>
           2/2<input id='secondhalf' type='checkbox'></input> - 
@@ -140,6 +143,8 @@
  -->          <button id='quickStart-2' style="width: 75px; height: 35px">Run</button>
               <button id='reset-2' style="width: 75px; height: 35px">Reset</button>
                         <button id='smartStart-2' style="width: 75px; height: 35px">Test</button>
+                        <button id='testall-2' style="width: 75px; height: 35px">Test All</button>
+
           <p id='text1-2'></p>
             <p id='text-2'></p>
             
@@ -228,6 +233,7 @@
     Window:<input id='event_window' placeholder="180" style="width: 35px;"></input>seconds
     Bid: <input id='event-multiplier' placeholder=".9" style="width: 25px;"></input>*Floor
     Exp<input id='event-expiration' placeholder="1" style="width: 25px;"></input>
+      <button id='private_sales' style="width: 75px; height: 35px">Private</button>
     <br>
             <p id='text' style="display:inline;"></p>
             <br>

@@ -1,13 +1,27 @@
 const values = require('./values.js')
 const data = require('./data.js')
+const secret = require('./secret.js')
+const opensea = require("opensea-js")
+const OpenSeaPort = opensea.OpenSeaPort;
+const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
-const { buildSeaport, getTimeBasedInfuraKey } = require('./shared.js');
-
-const ProviderEngine = require('./provider-engine.js');
-
+if(values.default.USE_DATA !== undefined){
+  values.default.OWNER_ADDRESS = data.default.OWNER_ADDRESS
+}
 var OWNER_ADDRESS = values.default.OWNER_ADDRESS[0].address
 values.default.EVENT_WALLET = OWNER_ADDRESS
 // Provider
+const MnemonicWalletSubprovider = require("@0x/subproviders")
+.MnemonicWalletSubprovider;
+const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
+const Web3ProviderEngine = require("web3-provider-engine");
+const MNEMONIC = secret.default.MNEMONIC
+const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
+  mnemonic: MNEMONIC,
+});
+//
+// Get current time to determine which Infura key to use. Swaps keys every 6 hours.
+//
 if(values.default.TITLE !== undefined){
   document.getElementById('title').innerHTML = values.default.TITLE
 }
@@ -19,23 +33,44 @@ var provider_string = ''
 if(values.default.ALCHEMY_KEY !== undefined){
   provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
 } else {
-  provider_string = "https://mainnet.infura.io/v3/" + getTimeBasedInfuraKey()
+  var currentHour = new Date().getHours()
+  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }else if(values.default.INFURA_KEY.length === 5){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+  }
+  provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
 }
-
+var infuraRpcSubprovider = new RPCSubprovider({
+  rpcUrl: provider_string//"https://mainnet.infura.io/v3/" + INFURA_KEY
+});
 values.default.BLACK_LIST.push(values.default.OWNER_ADDRESS[0].username)
-let providerEngine = new ProviderEngine(provider_string);
+var providerEngine = new Web3ProviderEngine();
+providerEngine.addProvider(mnemonicWalletSubprovider);
+providerEngine.addProvider(infuraRpcSubprovider);
 if(values.default.ALCHEMY_KEY !== undefined){
   providerEngine.start();
 }
-// Create seaport object using provider created.
-var seaport = buildSeaport(providerEngine);
+//providerEngine.start();
 
 if(values.default.DEFAULT_TRAIT !== undefined){
   document.getElementById('addProperty-2').value = values.default.DEFAULT_TRAIT[0]
   document.getElementById('addTrait-2').value = values.default.DEFAULT_TRAIT[1]
 }
 var run_count = 0
+// Create seaport object using provider created. 
+var seaport = new OpenSeaPort(
 
+  providerEngine,
+  {
+    networkName: Network.Main,
+    apiKey: values.default.API_KEY
+  },
+  (arg) => console.log(arg)
+);
 document.getElementById('usepublic').addEventListener('click', function(){
   delay.value = 1500
   values.default.API_KEY = '2f6f419a083c46de9d83ce3dbe7db601'
@@ -47,10 +82,23 @@ document.getElementById('usepublic').addEventListener('click', function(){
 var infura_index = 0
 
 document.getElementById('infurakey').addEventListener('click', function(){
-  let INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
-  providerEngine.reset('https://mainnet.infura.io/v3/' + INFURA_KEY)
-  seaport = buildSeaport(providerEngine);
-
+  providerEngine.stop();
+  INFURA_KEY = values.default.INFURA_KEY[infura_index] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
+  infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+    networkName: Network.Main,
+      apiKey: values.default.API_KEY
+    },
+    (arg) => console.log(arg)
+  );
   infura_index += 1
   if(infura_index === values.default.INFURA_KEY.length - 1){
     infura_index = 0
@@ -114,24 +162,42 @@ document.getElementById('aggressivemulti-2').addEventListener('click', function(
   }
 })
 
-
+//only if using infura
+//not called if using alchemy 
 function create_seaport(){
-  let INFURA_KEY = getTimeBasedInfuraKey();
+  providerEngine.stop();
+  currentHour = new Date().getHours()
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }else if(values.default.INFURA_KEY.length === 5){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+}
   console.log('creating seaport ' + INFURA_KEY)
   console.log('creating seaport ' + values.default.API_KEY)
   console.log(run_count)
-  providerEngine.reset('https://mainnet.infura.io/v3/' + INFURA_KEY);
-  seaport = buildSeaport(providerEngine);
+  infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main,
+      apiKey: values.default.API_KEY
+    },
+    (arg) => console.log(arg)
+  );
 }
 
 var tokenId_array = []
 var name_array = []
 var asset_dict = []
-
-function addAssetToList(id, name) {
-  tokenId_array.push(id)
-  name_array.push(name)    
-}
 
 var NFT_CONTRACT_ADDRESS = ''
 var offerAmount = 0
@@ -317,15 +383,33 @@ quickButton.addEventListener('click', function(){
   increaseBid.disabled = false
   increaseBid1.disabled = false
   progressBar.max = assetCount
-  run()
+  try {
+    require('./collections/' + COLLECTION_NAME + '.json')
+    run_json()
+  } catch (e){
+    run()
+  }
+
+  
+})
+document.getElementById('testall-2').addEventListener('click', async function(){
+  for(var address of data.default.OWNER_ADDRESS){
+    var success = await test_bid(address.address)
+    console.log(address.username + ' ' + success)
+  }
+  
 })
 document.getElementById('smartStart-2').addEventListener('click', function(){
-  test_bid()
+  test_bid(1)
 })
-async function test_bid(){
-  const asset = {
-    tokenId: '1690',
-    tokenAddress: '0x1cb1a5e65610aeff2551a50f76a87a7d3fb649c6',
+
+async function test_bid(address){
+  if(address === 1){
+    address = address
+  }
+  var asset = {
+    tokenId: '8573',
+    tokenAddress: '0x24998f0a028d197413ef57c7810f7a5ef8b9fa55',
     //schemaName: WyvernSchemaName.ERC1155
   }
   try{
@@ -335,19 +419,18 @@ async function test_bid(){
     await seaport.createBuyOrder({
       asset,
       startAmount: .0001,
-      accountAddress: OWNER_ADDRESS,
+      accountAddress: address,
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .01),
     })
     text.style.color = 'black'
     text.innerHTML = 'Bid Successful'
-
+    return 'success'
   } catch(ex){
-    console.log(ex)
-    console.log(ex.message)
     text.style.color = 'red'
     text.innerHTML = ex.message
   }
   providerEngine.stop()
+  return 'fail'
 }
 
 var offersDict = {}
@@ -373,7 +456,7 @@ confirmButton.addEventListener('click', function(){
     expirationHours = document.getElementById('expireInput-2').value
     if(expirationHours === '') {
      expirationHours = 1
-   }
+    }
    if(document.getElementById('bidMultiplier-2').value !== ''){
     bidMultiplier = document.getElementById('bidMultiplier-2').value
     
@@ -394,6 +477,10 @@ confirmButton.addEventListener('click', function(){
   }
    if (offerAmount === ''){
     alert('No bid entered.')
+    return
+  }
+  if (document.getElementById('absolute-max').value === ''){
+    alert('Enter Absolute Max.')
     return
   }
   quickButton.disabled = false
@@ -474,11 +561,106 @@ function update_floor(){
 text.style.fontSize = '20px'
 text1.style.fontSize = '20px'
 // var midrun = false
-
 ///////////////////////////////////////////////////////////////////////////////////
 ///********************************************************************************
 ///This function is responsible for generating the assets to be bid on. 
 ///Ex. multi trait bidding, fractional runs on set.
+function partition_run(part, length){
+  var start = 0
+  var end = 0
+
+  if(part === 'firsthalf'){
+    start = 0
+    end = length/2
+  } else if (part === 'secondhalf') {
+    start = length/2
+    end = length
+  } 
+
+  else if (part === 'firstquarter') {
+    start = 0
+    end = length/4
+  } else if (part === 'secondquarter') {
+    start = length/4
+    end = length/4 + length/4
+  } else if (part === 'thirdquarter') {
+    start = length/4 + length/4
+    end = length/4 + length/4 + length/4
+  } else if (part === 'fourthquarter') {
+    start = length/4 + length/4 + length/4
+    end = length
+  } 
+
+  else if (part === 'firsteighth') {
+    start = 0
+    end = length/8
+  } else if (part === 'secondeighth') {
+    start = length/8
+    end = length/8 + length/8
+  } else if (part === 'thirdeighth') {
+    start = length/8 + length/8
+    end = length/8 + length/8 + length/8
+  } else if (part === 'fourtheighth') {
+    start = length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8
+  } else if (part === 'fiftheighth') {
+    start = length/8 + length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8 + length/8
+  } else if (part === 'sixtheighth') {
+    start = length/8 + length/8 + length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8 + length/8 + length/8
+  } else if (part === 'seventheighth') {
+    start = length/8 + length/8 + length/8 + length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8 + length/8 + length/8 + length/8
+  } else if (part === 'eightheighth') {
+    start = length/8 + length/8 + length/8 + length/8 + length/8 + length/8 + length/8
+    end = length/8 + length/8 + length/8 + length/8 + length/8 + length/8 + length/8 + length/8
+  }
+
+  return [start, end]
+}
+
+function run_json(){
+  text.innerHTML = 'Starting.....'
+
+  console.log(COLLECTION_NAME)
+  const nft_collection = require("./collections/" + COLLECTION_NAME + ".json").assets
+  console.log(nft_collection)
+  // data = read_assets(COLLECTION_NAME)
+  let partitions = ['firsthalf', 'secondhalf', 'firstquarter', 'secondquarter', 'thirdquarter', 'fourthquarter', 'firsteighth', 'secondeighth', 
+                    'thirdeighth', 'fourtheighth', 'fiftheighth', 'sixtheighth', 'seventheighth', 'eightheighth']
+
+  for(var part of partitions){
+    console.log(document.getElementById(part).checked)
+
+    if(document.getElementById(part).checked === true){
+      var startEnd = partition_run(part, nft_collection.length)
+      break
+    } else {
+      startEnd = [0, nft_collection.length]
+    }
+  }
+  
+  for(var start_value = Math.ceil(startEnd[0]); start_value < Math.ceil(startEnd[1]); start_value+=1){
+    console.log(start_value)
+    console.log(nft_collection[start_value])
+    tokenId_array.push(nft_collection[start_value].tokenId)
+    name_array.push(nft_collection[start_value].name)
+  }
+  console.log(tokenId_array)
+  console.log(name_array)
+  assetCount = tokenId_array.length - 1
+  progressBar.max = assetCount
+  pause()
+  reset()
+  start()
+  stop = 0
+  stop2 = 0
+  halt = 0
+  placeBid()
+  placeBid2()
+}
+
 async function run() {
   if(document.getElementById('delayStart-2').value !== ''){
     text.innerHTML = 'Starting in ' + document.getElementById('delayStart-2').value + ' minutes.'
@@ -529,8 +711,108 @@ async function run() {
       if(halt === 1) {
         break
       }
+      var limit = 50
+      if((Math.floor(assetCount/2) - offset) < 50){
+        limit = (Math.floor(assetCount/2) - offset)
+      }
       //await new Promise(resolve => setTimeout(resolve, 5000))
-      await fetchAndProcessCollection(collectionName, offset, direction);
+      try{
+        var collection = await seaport.api.getAssets({
+          'collection': collectionName,
+          'offset': offset,
+          'limit': limit,
+          'order_direction': direction
+        })
+        console.log(collection)
+        for(var asset in collection['assets']){
+          if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
+            if(collection['assets'][asset]['sellOrders'] !== null){
+              if(collection['assets'][asset]['sellOrders'][0].taker !== "0x0000000000000000000000000000000000000000"){
+                console.log('private sale')
+                beep()
+                console.log(collection['assets'][asset]['sellOrders'].takerAccount)
+              }
+              
+              if(document.getElementById('aboveFloor-2').value !== ''){
+                if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
+                  tokenId_array.push(collection['assets'][asset]['tokenId'])
+                  name_array.push(collection['assets'][asset]['name'])    
+                  console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
+                }
+              } else {
+                console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)
+                tokenId_array.push(collection['assets'][asset]['tokenId'])
+                name_array.push(collection['assets'][asset]['name'])
+              }     
+            }
+          } else {
+            if(document.getElementById('addProperty-2').value !== ''){
+              for(var trait in collection['assets'][asset]['traits']){
+                if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
+                  if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
+                    if(document.getElementById('sellOrder-2').checked){
+                      if(collection['assets'][asset]['sellOrders'] !== null){
+                        
+                        tokenId_array.push(collection['assets'][asset]['tokenId'])
+                        name_array.push(collection['assets'][asset]['name'])
+                      }
+                    } else{
+                      tokenId_array.push(collection['assets'][asset]['tokenId'])
+                      name_array.push(collection['assets'][asset]['name'])
+                    }
+                  }
+                }
+              }
+            } 
+            else {
+              var traitfound = false
+              if(document.getElementById('multitrait-2').checked === true || document.getElementById('traitskip-2').checked === true){
+                for(trait in collection['assets'][asset]['traits']){
+                  for(var p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
+                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
+                      for(var t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
+                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(t)){
+                          traitfound = true
+                          
+                          if(Object.keys(asset_dict).includes(collection['assets'][asset]['tokenId'])){
+                            if(asset_dict[collection['assets'][asset]['tokenId']][0] < values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t][0]){
+                              asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                            }
+                          } else {
+                            asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                          }
+                          
+                        }
+                      }
+                    }
+
+                  }
+                } 
+                  if (traitfound === true && document.getElementById('traitskip-2').checked === false){
+                      tokenId_array.push(collection['assets'][asset]['tokenId'])
+                      name_array.push(collection['assets'][asset]['name'])
+                  }
+                  if(traitfound === false && document.getElementById('traitsonly-2').checked === false){
+                    tokenId_array.push(collection['assets'][asset]['tokenId'])
+                    name_array.push(collection['assets'][asset]['name'])
+                  }
+                  traitfound = false
+                // if(document.getElementById('traitsonly-2') === false){
+                //   tokenId_array.push(collection['assets'][asset]['tokenId'])
+                //   name_array.push(collection['assets'][asset]['name'])
+                // }  
+              } 
+              else{
+                tokenId_array.push(collection['assets'][asset]['tokenId'])
+                name_array.push(collection['assets'][asset]['name'])
+              } 
+            }
+          }
+        }
+      } catch (ex){
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        console.log(ex)
+      }
       console.log(tokenId_array.length)
       text.innerHTML = tokenId_array.length + '(' + offset + ') of ' + assetCount + ' collected'
     }
@@ -568,7 +850,7 @@ async function run() {
 ///********************************************************************************
 ///Run through second half of collection in decending order
   if(document.getElementById('firsthalf').checked === false){
-    for(offset; offset < assetCount/2; offset+=50){
+    for(offset; offset < Math.ceil(assetCount/2); offset+=50){
       if(document.getElementById('firstquarter').checked === true || document.getElementById('secondquarter').checked === true
         || document.getElementById('firsteighth').checked === true || document.getElementById('secondeighth').checked === true
         || document.getElementById('thirdeighth').checked === true || document.getElementById('fourtheighth').checked === true){
@@ -577,8 +859,98 @@ async function run() {
       if(halt === 1) {
         break
       }
+      limit = 50
+      if((Math.floor(assetCount/2) - offset) < 50){
+        limit = (Math.floor(assetCount/2) - offset)
+      }
       //await new Promise(resolve => setTimeout(resolve, 5000))
-      await fetchAndProcessCollection(collectionName, offset, direction);
+      try{
+        collection = await seaport.api.getAssets({
+          'collection': collectionName,
+          'offset': offset,
+          'limit': limit,
+          'order_direction': direction
+        })
+        console.log(collection)
+        for(asset in collection['assets']){
+          if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
+            
+            if(collection['assets'][asset]['sellOrders'] !== null){
+              if(document.getElementById('aboveFloor-2').value !== ''){
+                if(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000 < current_floor * (document.getElementById('aboveFloor-2').value)){
+                  tokenId_array.push(collection['assets'][asset]['tokenId'])
+                  name_array.push(collection['assets'][asset]['name'])    
+                  console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)     
+                }
+              } else {
+                console.log(collection['assets'][asset]['sellOrders'][0].basePrice/1000000000000000000)
+                tokenId_array.push(collection['assets'][asset]['tokenId'])
+                name_array.push(collection['assets'][asset]['name'])
+              }
+              
+            }
+          } else {
+            if(document.getElementById('addProperty-2').value !== ''){
+              for(trait in collection['assets'][asset]['traits']){
+                if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(document.getElementById('addProperty-2').value)){
+                  if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)){
+                    if(document.getElementById('sellOrder-2').checked){
+                      if(collection['assets'][asset]['sellOrders'] !== null){
+                        
+                        tokenId_array.push(collection['assets'][asset]['tokenId'])
+                        name_array.push(collection['assets'][asset]['name'])
+                      }
+                    } else{
+                      tokenId_array.push(collection['assets'][asset]['tokenId'])
+                      name_array.push(collection['assets'][asset]['name'])
+                    }
+                  }
+                }
+              }
+            } 
+            else {
+              traitfound = false
+              if(document.getElementById('multitrait-2').checked === true || document.getElementById('traitskip-2').checked === true){
+                for(trait in collection['assets'][asset]['traits']){
+                  for(p in values.default.COLLECTION_TRAIT[COLLECTION_NAME]){
+                    if(collection['assets'][asset]['traits'][trait]['trait_type'].toLowerCase().includes(p)){
+                      for(t in values.default.COLLECTION_TRAIT[COLLECTION_NAME][p]){
+                        if(collection['assets'][asset]['traits'][trait]['value'].toLowerCase().includes(t)){
+                          traitfound = true
+                          if(Object.keys(asset_dict).includes(collection['assets'][asset]['tokenId'])){
+                            if(asset_dict[collection['assets'][asset]['tokenId']][0] < values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t][0]){
+                              asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                            }
+                          } else {
+                            asset_dict[collection['assets'][asset]['tokenId']] = values.default.COLLECTION_TRAIT[COLLECTION_NAME][p][t]
+                          }
+                        }
+                      }
+                    }
+                  }   
+                }
+                  if (traitfound === true && document.getElementById('traitskip-2').checked === false){
+                      tokenId_array.push(collection['assets'][asset]['tokenId'])
+                      name_array.push(collection['assets'][asset]['name'])
+                  }
+                  if(traitfound === false && document.getElementById('traitsonly-2').checked === false){
+                    tokenId_array.push(collection['assets'][asset]['tokenId'])
+                    name_array.push(collection['assets'][asset]['name'])
+                  }
+                  traitfound = false
+              } 
+              else{
+                tokenId_array.push(collection['assets'][asset]['tokenId'])
+                name_array.push(collection['assets'][asset]['name'])
+              }
+                
+            }
+          }
+        }
+      } catch (ex){
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        console.log(ex)
+      }
       console.log(tokenId_array.length)
       text.innerHTML = tokenId_array.length + '(' + (parseInt(offset) + temp_offset) + ') of ' + assetCount + ' collected'
     }
@@ -586,6 +958,17 @@ async function run() {
   if(document.getElementById('reverse-2').checked){
     tokenId_array.reverse()
     name_array.reverse()
+  }
+  var half_length = 0
+  if(document.getElementById('firsthalfhalf').checked === true) {
+    half_length = Math.ceil(tokenId_array.length / 2); 
+    tokenId_array = tokenId_array.splice(0,half_length);
+    name_array = name_array.splice(0,half_length);
+  }
+  if(document.getElementById('secondhalfhalf').checked === true) {
+    half_length = Math.ceil(tokenId_array.length / 2); 
+    tokenId_array = tokenId_array.splice(0,half_length);
+    name_array = name_array.splice(0,half_length);
   }
   if(halt === 1) {
     offers = 0
@@ -622,87 +1005,6 @@ async function run() {
   
   }
 }
-/**
- * Fetch a collection with some search and sort parameters and process the collection in preperation for bidding.
- * @param {string} collectionName - name of collection to query.
- * @param {number} offset - offset for the getAssets query.
- * @param {string} direction - Either 'asc' or 'desc'. Sort order of query.
- */
-async function fetchAndProcessCollection(collectionName, offset, direction) {
-  try {
-    let collection = await seaport.api.getAssets({
-      'collection': collectionName,
-      'offset': offset,
-      'limit': '50',
-      'order_direction': direction
-    })
-    console.log(collection)
-    selectAssetsFromCollection(collection);
-  } catch (ex){
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    console.log(ex)
-  }
-}
-/**
- * Based on the parameters given to bot makes a list of assets that meet the requirements.
- * @param {} collection - response from seaport.api.getAssets
- */
-function selectAssetsFromCollection(collection) {
-  for (let asset of collection.assets) {
-    let traitNameField = document.getElementById('addProperty-2').value;
-    // if we are buying only listed nfts and there are no specified traits we want
-    if (document.getElementById('sellOrder-2').checked && traitNameField === '') {
-      if (asset.sellOrders !== null) {
-        let aboveFloorValue = document.getElementById('aboveFloor-2').value;
-        let topSaleOrderPrice = asset.sellOrders[0].basePrice/1000000000000000000;
-        if (aboveFloorValue === '' || topSaleOrderPrice < current_floor * aboveFloorValue) {
-          console.log(topSaleOrderPrice);
-          addAssetToList(asset.tokenId, asset.name);
-        }
-      }
-    } else if (traitNameField !== '') { // trait name and value text field in bot ui populated
-      for (const trait of asset.traits) {
-        if (trait['trait_type'].toLowerCase().includes(traitNameField) && trait['value'].toLowerCase().includes(document.getElementById('addTrait-2').value)) {
-          if (document.getElementById('sellOrder-2').checked === false) { // include all unlisted and listed nfts
-            addAssetToList(asset.tokenId, asset.name);
-          } else if (asset.sellOrders !== null) { // include only listed nfts
-            addAssetToList(asset.tokenId, asset.name);
-          }
-        }
-      }
-    } else if (document.getElementById('multitrait-2').checked === true || document.getElementById('traitskip-2').checked === true) { // we have a list of traits to search or skip ( at this point listed was not checked)
-      let traitfound = false;
-      let traitsToSearchFor = values.default.COLLECTION_TRAIT[COLLECTION_NAME]; // bid range data for traits we're searching for
-      for (const trait of asset.traits) { // for each trait on the asset
-        for (const trait_name in traitsToSearchFor) { // and for each trait in our traitsToSearchFor map
-          if (trait['trait_type'].toLowerCase().includes(trait_name)) { //trait_type is the name of the trait. is the trait name in our traitsToSearchFor
-            for (const trait_val in traitsToSearchFor[trait_name]) { // for each trait value we are interested in
-              if (trait['value'].toLowerCase().includes(trait_val)) { // is the asset trait value in our traitsToSearchFor
-                traitfound = true;
-                const traitBidRange = traitsToSearchFor[trait_name][trait_val];
-                // set trait bid range or update range if asset has another higher value trait
-                if (Object.keys(asset_dict).includes(asset.tokenId) === false) {
-                  asset_dict[asset.tokenId] = traitBidRange;
-                } else if (asset_dict[asset.tokenId][0] < traitBidRange[0]) {
-                  asset_dict[asset.tokenId] = traitBidRange;
-                }
-              }
-            }
-          }
-        }
-      }
-      if (traitfound === true && document.getElementById('traitskip-2').checked === false) {
-        addAssetToList(asset.tokenId, asset.name);
-      }
-      if (traitfound === false && document.getElementById('traitsonly-2').checked === false) {
-        addAssetToList(asset.tokenId, asset.name);
-      }
-    } else { // all listed or unlisted. no multitraits to search for. no traits specified in ui
-      addAssetToList(asset.tokenId, asset.name);
-    }
-  }
-}
-
 function check_errors(msg){
   if(msg.includes('Insufficient balance.')){
     beep()
@@ -846,12 +1148,15 @@ async function placeBid(){
         placebidoffer = .001 + parseFloat(highestBid)
       }
      }
+     if(document.getElementById('multitraitflat-2').checked === true){
+      placebidoffer = asset_dict[tokenId_array[i]][2]
+     }
     }
     try{
-      if(parseFloat(placebidoffer) > parseFloat(values.default.ABSOLUTE_MAX)){
-        document.getElementById('repeat-2').checked = false
+
+      if(parseFloat(placebidoffer) > parseFloat(document.getElementById('absolute-max').value)){
         text.style.color = 'red'
-        text.innerHTML = 'Something went horribly wrong.. ' + name_array[i] + ' ' + placebidoffer
+        text.innerHTML = 'Floor above bid! ' + name_array[i] + ' ' + placebidoffer
         beep()
         beep()
         beep()
@@ -867,7 +1172,8 @@ async function placeBid(){
         beep()
         beep()
         beep()
-        break
+        await new Promise(resolve => setTimeout(resolve, 30000))
+        continue
       }
       await seaport.createBuyOrder({
         asset,
@@ -1035,12 +1341,14 @@ async function placeBid2(){
         placebid2offer = .001 + parseFloat(highestBid)
       }
      }
+     if(document.getElementById('multitraitflat-2').checked === true){
+      placebid2offer = asset_dict[tokenId_array[i]][2]
+     }
     }
     try{
-      if(parseFloat(placebid2offer) > parseFloat(values.default.ABSOLUTE_MAX)){
-        document.getElementById('repeat-2').checked = false
+      if(parseFloat(placebid2offer) > parseFloat(document.getElementById('absolute-max').value)){
         text.style.color = 'red'
-        text.innerHTML = 'Something went horribly wrong.. ' + name_array[i] + ' ' + placebid2offer
+        text.innerHTML = 'Floor above bid! ' + name_array[i] + ' ' + placebid2offer
         beep()
         beep()
         beep()
@@ -1056,7 +1364,8 @@ async function placeBid2(){
         beep()
         beep()
         beep()
-        break
+        await new Promise(resolve => setTimeout(resolve, 30000))
+        continue
       }
       await seaport.createBuyOrder({
         asset,
