@@ -418,7 +418,7 @@ async function test_bid(address){
     providerEngine.start()
     await seaport.createBuyOrder({
       asset,
-      startAmount: .0001,
+      startAmount: 0,
       accountAddress: address,
       expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .01),
     })
