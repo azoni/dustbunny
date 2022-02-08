@@ -1334,6 +1334,27 @@ async function placeBid2(){
       }      
     }
     var placebid2offer = parseFloat(offset) + parseFloat(offerAmount)
+    if(parseFloat(placebid2offer) > parseFloat(document.getElementById('absolute-max').value)){
+      text.style.color = 'red'
+      text.innerHTML = 'Floor above bid! ' + name_array[i] + ' ' + placebid2offer
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      beep()
+      await new Promise(resolve => setTimeout(resolve, 30000))
+      continue
+    }
     if(document.getElementById('multitrait-2').checked === true && Object.keys(asset_dict).includes(tokenId_array[i])){
      placebid2offer = (asset_dict[tokenId_array[i]][0] - service_fee/10000) * current_floor
      if(placebid2offer < highestBid) {
@@ -1346,27 +1367,7 @@ async function placeBid2(){
      }
     }
     try{
-      if(parseFloat(placebid2offer) > parseFloat(document.getElementById('absolute-max').value)){
-        text.style.color = 'red'
-        text.innerHTML = 'Floor above bid! ' + name_array[i] + ' ' + placebid2offer
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        beep()
-        await new Promise(resolve => setTimeout(resolve, 30000))
-        continue
-      }
+      
       await seaport.createBuyOrder({
         asset,
         startAmount: placebid2offer,
