@@ -197,7 +197,7 @@ const values = {
 		'clonex',
 		'cryptoadz-by-gremplin',
 	],
-	BACY: '0x5ea09d2E44759C46F8F2a884815B6bD06dcA440F',
+	BAYC: '0x5ea09d2E44759C46F8F2a884815B6bD06dcA440F',
 	WATCH_LIST: ['cyberkongz','cool-cats-nft', 'cryptoadz-by-gremplin',
 	 'cyberkongz', 'doodles-official', 'mutant-ape-yacht-club', 
 	 'bored-ape-kennel-club', 'desperate-ape-wives', 'bears-deluxe-new',
@@ -228,7 +228,7 @@ const values = {
 		}, 
 		{
 			username: 'DustBunny_3',
-			address: '0xfb27e7b963982fb3a955c401f93a0db8042e679e'
+			address: '0xfb27e7b93a63982fb3a955c401f93a0db8042e679e'
 		}, 
 		{
 			username: 'DustBunny_4',
