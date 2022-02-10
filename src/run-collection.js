@@ -725,6 +725,9 @@ async function run() {
         })
         console.log(collection)
         for(var asset in collection['assets']){
+          if(collection['assets'][asset]['owner']['address'] === data.default.STAKING_WALLETS[collectionName]){
+            continue
+          }
           if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
             if(collection['assets'][asset]['sellOrders'] !== null){
               if(collection['assets'][asset]['sellOrders'][0].taker !== "0x0000000000000000000000000000000000000000"){
@@ -873,6 +876,9 @@ async function run() {
         })
         console.log(collection)
         for(asset in collection['assets']){
+          if(collection['assets'][asset]['owner']['address'] === data.default.STAKING_WALLETS[collectionName]){
+            continue
+          }
           if(document.getElementById('sellOrder-2').checked && document.getElementById('addProperty-2').value === ''){
             
             if(collection['assets'][asset]['sellOrders'] !== null){

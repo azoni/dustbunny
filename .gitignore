@@ -24,5 +24,3 @@ yarn-error.log*
 
 /src/secret.js
 /src/values.js
-
-/src/collections/*.json

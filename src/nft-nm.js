@@ -905,7 +905,7 @@ document.getElementById('nextAccount-2').addEventListener('click', function(){
 
 var total_weth = 0
 var total_eth = 0
-if(values.default.TITLE ==='Home'){
+if(values.default.TITLE ==='Homeeee'){
   console.log('Account balances (WETH)...')
   //getBalance for weth, eth.getBalance for eth
 getBalance('0xB1CbED4ab864e9215206cc88C5F758fda4E01E25').then(function (result) {
