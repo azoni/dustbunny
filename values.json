@@ -1,0 +1,118 @@
+{
+	"INFURA_KEY": [
+		"bf57d8d103474bdf81e1a37a39f6428e",
+		"17c4657aa6004b509f50c00c41d24757",
+		"0feee8a2a2a44d5ca52a065849240452",
+		"057cfed1819e417485704e72e4ac4ffb",
+		"e73b2d4b5dc44e4c89f749c400508029"
+	],
+	"ALCHEMY_KEY": "EtQsNtpr305cwb0N9xoHfFltJYWrYjX8",
+	"DEFAULT_EXPIRATION": 1.25,
+	"DEFAULT_BIDS": [
+		0.7,
+		0.9
+	],
+	"DEFAULT_DELAY": 150,
+	"COLLECTION_TRAIT": {
+		"cool-cats-nft": {
+			"tier": {
+				"cool_2": 0.925,
+				"wild_1": 0.975,
+				"wild_2": 1,
+				"classy_1": 1,
+				"classy_2": 1,
+				"exotic_1": 1,
+				"exotic_2": 1
+			}
+		},
+		"doodles-official": {
+			"face": {
+				"neutral note": 0.975,
+				"mad note": 1.15
+			},
+			"head": {
+				"balloon": 2,
+				"devil": 1.5
+			}
+		}
+	},
+	"OWNER_ADDRESS": [
+		{
+			"username": "DustBunny_10",
+			"address": "0xa6e3dd05cd995c3d7f4e84917b5292b4d2de4c3e"
+		},
+		{
+			"username": "DustBunny_1",
+			"address": "0xb56851362de0f360e91e5f52ec64d0a1d52e98e6"
+		},
+		{
+			"username": "DustBunny_2",
+			"address": "0x52d809bcd3c631760b1e480b8d3be13d7eec0e25"
+		},
+		{
+			"username": "DustBunny_11",
+			"address": "0xc966380fc69d989e7fa021d2f6f0e3db65f36f59"
+		},
+		{
+			"username": "DustBunny_13",
+			"address": "0x4cc553e8bbba85dede46b997455d23034f70bb32"
+		},
+		{
+			"username": "TeddyGraham",
+			"address": "0x1484d9ae6d590d6b0981e802f555a8dd74b93017"
+		},
+		{
+			"username": "T801703",
+			"address": "0x873da8e14fd648b763fe896caa41935e17801703"
+		}
+	],
+	"API_KEY": "3e994eb084474893abe7842014dbd66c",
+	"API_KEY2": "578c069362bf4af7aa66b61e844867a9",
+	"BLACK_LIST": [
+		"ShoulderPress",
+		"OtterPop",
+		"DrBurry",
+		"DustBunny",
+		"BalloonAnimal",
+		"DE2E017",
+		"CakeBatter",
+		"TeddyGraham",
+		"DoughnutHole",
+		"Sad002d",
+		"Ti801703",
+		"nftd00d"
+	],
+	"WALLET_SETS": {
+		"cool-cats-nft": "0x13b451d77b87361d376ae211f640ed1a4491181d",
+		"doodles-official": "0x4beac303c8fdf1f3cd34509b344067e86dcbc506",
+		"bears-deluxe": "0x41899a097dac875318bf731e5f4a972544ad002d",
+		"anonymice": "0x4beac303c8fdf1f3cd34509b344067e86dcbc506",
+		"creatureworld": "0x41899a097dac875318bf731e5f4a972544ad002d",
+		"cryptoadz-by-gremplin": "0x0a85b0be9574a86b526e1f99cc6a3f2ad30baa65",
+		"world-of-women-nft": "0x41899a097dac875318bf731e5f4a972544ad002d",
+		"cyberkongz": "0x4beac303c8fdf1f3cd34509b344067e86dcbc506",
+		"metahero-generative": "0x4beac303c8fdf1f3cd34509b344067e86dcbc506"
+	},
+	"FAVORITES": [
+		"doodles-official",
+		"cryptoadz-by-gremplin",
+		"cyberkongz",
+		"desperate-ape-wives",
+		"bears-deluxe-new"
+	],
+	"favorites": {
+		"doodles-official": [],
+		"theshiboshis": [
+			9999
+		],
+		"lootproject": [
+			7779
+		],
+		"anonymice": [
+			9999
+		],
+		"cryptoadz-by-gremplin": [
+			6969
+		]
+	}
+}

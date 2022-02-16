@@ -31,6 +31,66 @@ const values = {
 		'critterznft': '0x6714de8aa0db267552eb5421167f5d77f0c05c6d'
 	},
 	COLLECTION_TRAIT: {
+		'alienfrensnft': {
+            '1 of 1': {
+                'albino': [3, 4],
+                'electric': [3, 4],
+                'holo': [3, 4],
+                'melted': [3, 4],
+                'monochrome': [3, 4],
+                'peaceful demon': [3, 4],
+            },
+            'background': {
+                'blue camo': [.9, .925],
+                'green camo': [.9, .925],
+                'red camo': [.9, .925],
+            },
+            'body': {
+                'olu': [.925, .95],
+                'zombie': [2, 3],
+            },
+            'clothes': {
+                'yellow hi': [.9, .925],
+                'space suit': [.9, .95],
+                'white tux': [.9, .925],
+                'abstract hoodie': [.9, .925],
+                'dark ninja': [.9, .925],
+                'imperial': [.9, .925],
+                'scuba': [.9, .925],
+                'biohazard': [.9, .925],
+                'imperial': [.9, .925],
+                'armor': [.9, .925],
+                'super gm': [1, 1.25],
+            },
+            'eyes': {
+                'glasses': [.9, .925],
+                'patches': [.9, .925],
+            },
+            'hats': {
+                'halo': [.9, .925],
+                'toad': [.9, .925],
+                'armor': [.925, .95],
+                'biohazard': [.925, .95],
+                'dark halo': [.925, .95],
+                'dark ninja master': [.925, .95],
+                'electric ears': [.925, .95],
+                'scuba': [.925, .95],
+                'space helmet': [.925, .95],
+                'crown': [.95, .975],
+                'dark crown': [.95, .975],
+                'blob blue': [2, 2.5],
+                'blob red': [2, 2.5],
+                'blob yellow': [2, 2.5],
+            },
+            'mouth': {
+                'braces': [.9, .925],
+                'sucker': [.9, .925],
+                'sewn shut': [.9, .925],
+                'monster': [.9, .925],
+                'drugz': [.9, .925],
+                'abduction': [.9, .925],
+            },
+        },
 		'cool-cats-nft': {
 			'tier': {
 				// 'cool_1': [.7,.8],
