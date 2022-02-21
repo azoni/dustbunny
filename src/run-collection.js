@@ -660,7 +660,29 @@ function run_json(){
   placeBid()
   placeBid2()
 }
-
+var current_block = 0
+async function get_latest_block(){
+  var current_time = Math.floor(+new Date()/1000)
+  const block_response = await fetch("https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=" + current_time + "&closest=before&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
+  const block_data = await block_response.json()
+  current_block = block_data.result
+}
+var staking_sets = data.default.STAKING_WALLETS
+async function check_stake(){
+  await new Promise(resolve => setTimeout(resolve, 500))
+  
+  const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + NFT_CONTRACT_ADDRESS + "&page=1&startblock=" + current_block + "&offset=100&sort=desc&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
+  const data = await response.json()
+  console.log(data.result)
+  for(let tx of data.result){ 
+    if(tx.from === staking_sets[COLLECTION_NAME]){
+      tokenId_array.push(tx.tokenID)
+    }
+  }  
+  assetCount = tokenId_array.length - 1
+  get_latest_block()
+}
+get_latest_block()
 async function run() {
   if(document.getElementById('delayStart-2').value !== ''){
     text.innerHTML = 'Starting in ' + document.getElementById('delayStart-2').value + ' minutes.'
@@ -1245,6 +1267,9 @@ async function placeBid(){
       progressBar.value = 0
       reset()
       start()
+      if(COLLECTION_NAME in data.default.STAKING_WALLETS){
+        check_stake()
+      }
       placeBid()
       placeBid2()
     } 
