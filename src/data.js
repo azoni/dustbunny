@@ -270,6 +270,13 @@ const values = {
 				'dress': [.6, .75],
 			}
 		},
+		'worldwidewebbland': {
+			'type': {
+				'medium apartment': [.95, 1],
+				'large apartment': [1.1, 1.2],
+				'penthouse': [3, 4],
+			}
+		},
 	},
 	WALLET_SETS: [
 		'cool-cats-nft',
