@@ -15,11 +15,25 @@ const MNEMONIC = secret.default.MNEMONIC2
 const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
   mnemonic: MNEMONIC,
 });
-var currentHour = new Date().getHours()
-var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+var provider_string = ''
+if(values.default.ALCHEMY_KEY !== undefined){
+  provider_string = 'https://eth-mainnet.alchemyapi.io/v2/' + values.default.ALCHEMY_KEY
+} else {
+  var currentHour = new Date().getHours()
+  var INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }else if(values.default.INFURA_KEY.length === 5){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+  }
+  provider_string = "https://mainnet.infura.io/v3/" + INFURA_KEY
+}
 var infuraRpcSubprovider = new RPCSubprovider({
-  rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  rpcUrl: provider_string
 });
+
 var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
@@ -826,6 +840,9 @@ async function redis_push_bids(){
 
 }
 async function get_redis_bids(){
+	if(values.default.ALCHEMY_KEY === undefined && bids_made % 1000 === 0){
+		create_seaport()
+	}
 	try{
 		var redis_bids = await fetch('http://10.0.0.172:3000/test_call') 
 	  redis_bids = await redis_bids.json() 
@@ -914,7 +931,34 @@ async function competitor_bid(asset){
 		await sleep(30000)
 	}
 }
-
+function create_seaport(){
+  providerEngine.stop();
+  currentHour = new Date().getHours()
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/3)] //[parseInt(run_count)%parseInt(values.default.INFURA_KEY.length - 1)]
+  if(values.default.INFURA_KEY.length === 6){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/4)]
+  } else if(values.default.INFURA_KEY.length === 4){
+    INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/6)]
+  }else if(values.default.INFURA_KEY.length === 5){
+  INFURA_KEY = values.default.INFURA_KEY[Math.floor(currentHour/5)]
+}
+  console.log('creating seaport ' + INFURA_KEY)
+  infuraRpcSubprovider = new RPCSubprovider({
+    rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
+  });
+  providerEngine = new Web3ProviderEngine();
+  providerEngine.addProvider(mnemonicWalletSubprovider);
+  providerEngine.addProvider(infuraRpcSubprovider);
+  providerEngine.start();
+  seaport = new OpenSeaPort(
+    providerEngine,
+    {
+      networkName: Network.Main,
+      apiKey: values.default.API_KEY
+    },
+    (arg) => console.log(arg)
+  );
+}
 // Convert time to a format of hours, minutes, seconds, and milliseconds
 
 function timeToString(time) {
