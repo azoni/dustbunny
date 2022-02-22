@@ -830,7 +830,7 @@ async function get_redis_bids(){
 		var redis_bids = await fetch('http://10.0.0.172:3000/test_call') 
 	  redis_bids = await redis_bids.json() 
 	  for(let asset of redis_bids){
-	  	await sleep(1000)
+	  	await sleep(500)
 	  	await competitor_bid(asset)
   		console.log(asset)
   	}
