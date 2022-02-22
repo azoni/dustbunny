@@ -847,7 +847,7 @@ async function get_redis_bids(){
 		var redis_bids = await fetch('http://10.0.0.172:3000/test_call') 
 	  redis_bids = await redis_bids.json() 
 	  for(let asset of redis_bids){
-	  	await sleep(500)
+	  	await sleep(250)
 	  	await competitor_bid(asset)
   		console.log(asset)
   	}
@@ -947,6 +947,9 @@ function create_seaport(){
     rpcUrl: "https://mainnet.infura.io/v3/" + INFURA_KEY
   });
   providerEngine = new Web3ProviderEngine();
+  const mnemonicWalletSubprovider = new MnemonicWalletSubprovider({
+	  mnemonic: MNEMONIC,
+	});
   providerEngine.addProvider(mnemonicWalletSubprovider);
   providerEngine.addProvider(infuraRpcSubprovider);
   providerEngine.start();
