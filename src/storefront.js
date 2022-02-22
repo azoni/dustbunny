@@ -5,6 +5,8 @@ const opensea = require("opensea-js")
 // import { createClient } from 'redis';
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
+const { WyvernSchemaName } = require('opensea-js/lib/types')
+
 const MnemonicWalletSubprovider = require("@0x/subproviders")
 .MnemonicWalletSubprovider;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
@@ -751,9 +753,6 @@ document.getElementById('get_competitor_bids').addEventListener('click', functio
 	get_competitor_bids()
 })
 
-
- 
-
 var wallet_set = data.default.WATCH_LIST
 var wallet_orders = data.default.COMP_WALLETS
 var event_window = 60000
@@ -826,47 +825,95 @@ async function get_competitor_bids(){
 async function redis_push_bids(){
 
 }
+async function get_redis_bids(){
+	try{
+		var redis_bids = await fetch('http://10.0.0.172:3000/test_call') 
+	  redis_bids = await redis_bids.json() 
+	  for(let asset of redis_bids){
+	  	await sleep(1000)
+	  	await competitor_bid(asset)
+  		console.log(asset)
+  	}
+  get_redis_bids()
 
+} catch(e){
+	console.log(e)
+}
+  
+}
+// if error call await get_collection(slug) .stats.floor_price
+async function get_redis_floor(slug){
+	try{
+		var floor = await fetch('http://10.0.0.172:3000/floor?name=' + slug) 
+	  return parseFloat(await floor.text())
+} catch(e){
+	console.log(e)
+}
+	// try{
+	// 	var collection = await get_collection(slug)
+	// 	console.log(collection)
+	// 	return collection.collection.stats.floor_price
+	// } catch (e){
+	// 	console.log(e)
+	// }
+	
+}
+// testcall()
 document.getElementById('competitor_bid').addEventListener('click', function(){	
-	// competitor_bid()
+	swap()
+	reset()
+	start()
+	get_redis_bids()
+	get_redis_bids()
 })
-// async function competitor_bid(order_array, username){
-// 	  if(document.getElementById('event-multiplier').value !== ''){
-//       event_multi = document.getElementById('event-multiplier').value
-//     }
-//     if(document.getElementById('event-expiration').value !== ''){
-//       expiration = document.getElementById('event-expiration').value
-//     }
-//     for(var i = Math.floor(order_array.length/2); i < order_array.length; i++){
-//       if(event_stop === 1){
-//         break
-//       }
-//       console.log(order_array[i].collection + ' ' + order_array[i].asset.tokenId + ', ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
-//       //await new Promise(resolve => setTimeout(resolve, delay.value))
-//       try{
-//         await seaport.createBuyOrder({
-//           asset: order_array[i].asset,
-//           startAmount: order_array[i].bid,
-//           accountAddress: values.default.EVENT_WALLET,
-//           expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * expiration),
-//         })
-//         text.innerHTML = order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4)
-//         text1.innerHTML = username + ' #' + order_array[i].asset.tokenId + ' upbid: ' + order_array[i].bid.toFixed(4)
-//         console.log(order_array[i].collection + ' Floor: ' + order_array[i].floor.toFixed(3) + ' max bid: ' + order_array[i].maxbid.toFixed(4))
-//         console.log(username + ' #' + order_array[i].asset.tokenId + ' upbid: ' + order_array[i].bid.toFixed(4))// + wallet_orders[wallet])
-//         eventbidcount += 1
-//         counter += 1 
-//         offersMade.innerHTML = 'offers made: ' + counter + ' total: ' + order_array.length
-//       }
-
-//       catch(ex){
-//         console.log(ex)
-//         console.log(ex.message)
-//         await new Promise(resolve => setTimeout(resolve, 30000))
-//       }
-//     }
-//     values.default.BID = 1
-// }
+// document.getElementById('unstake_bid').value
+var bid_total_value = 0
+async function competitor_bid(asset){
+	var slug = asset.slug
+	var fee = asset.fee
+	var floor = await get_redis_floor(asset.slug)
+	console.log(floor)
+	if(bids_made % 10 === 0 && bids_made !== 0){
+		text_area.innerHTML = ""
+	}
+	
+	var min_range = .6
+	var max_range = .8
+	var min = floor * (min_range - fee)
+	var max = floor * (max_range - fee)
+	// var top_bid = await get_top_bid_range(asset, min, max)
+	var bid_amount = parseFloat(asset.current_bid) + parseFloat(.001)
+	if(bid_amount > max){
+		return
+	}
+	try{
+		var assets_data = {
+    	tokenId: asset.token_id,
+      tokenAddress: asset.token_address,
+    }
+    if (asset.slug === 'guttercatgang' || asset.slug === 'clonex-mintvial'){
+      assets_data = {
+        tokenId: asset.token_id,
+        tokenAddress: asset.token_address,
+        schemaName: WyvernSchemaName.ERC1155
+      }      
+    }
+		await seaport.createBuyOrder({
+			asset: assets_data,
+			startAmount: bid_amount,
+			accountAddress: document.getElementById('unstake_bid').value,
+			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .5),
+		})
+		bids_made += 1
+		bid_total_value += bid_amount
+		document.getElementById('stats').innerHTML = "Bids: " + bids_made + " Bid Total Value: " + bid_total_value.toFixed(4)
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a><br>"
+	} catch(e){
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + '<br>'
+		console.log(e)
+		await sleep(30000)
+	}
+}
 
 // Convert time to a format of hours, minutes, seconds, and milliseconds
 
