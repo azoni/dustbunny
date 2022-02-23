@@ -18,10 +18,14 @@
     <title id='title'>Store</title>
   </head>
   <body id='body' style="text-align: center; background: lightgray;">
-    <h2 style='display: inline;' id='account_name'>Azoni</h2> <h2 id='gas' style='display: inline;'>Gas: </h2>  
-    <h2 id='account'>Azoni</h2>    
-    <!-- <input id='search' placeholder="winterbears"></input> -->
+    <br>
+    <h2 style='display: inline;' id='account_name'>Azoni</h2> 
+    <h2 id='account_weth' style='display: inline;'>Weth: </h2> 
+    <h2 id='gas' style='display: inline;'>Gas: </h2>  
+<!--     <h2 id='account'>Azoni</h2>    
+ -->    <!-- <input id='search' placeholder="winterbears"></input> -->
     <!-- <button id='refresh'>Refresh</button> -->
+    <br><br>
     <button id='balances'>Balances</button>
     <button id='display'>display</button>
     <button id='swap'>Swap</button>
@@ -33,7 +37,8 @@
     <button id='get_competitor_bids'>Start Competitor</button>
     <button id='competitor_bid22'>Competitor 22</button>
     <button id='competitor_bid20'>Competitor 20</button>
-    <button id='competitor_bid19'>Competitor 19</button><br>
+    <button id='competitor_bid19'>Competitor 19</button>
+    Delay <input id='delay' placeholder="150" style="width:25px"></input><br><br>
     <span class="time" id="time">00:00:00:00</span>
     <span id="stats">stats</span>
     <br><br>
@@ -45,7 +50,7 @@
         padding: 0 15px;
       }
     </style>
-    <table style="display: inline; text-align: left; font-size:200%;">
+<!--     <table style="display: inline; text-align: left; font-size:200%;">
     <thead>
     <tr>
         <th>Account</th>
@@ -54,31 +59,17 @@
     </tr>
     </thead>
     <tbody id='table1-body'>
-<!--     <tr bgcolor="lightgreen">
-        <td>Monte Falco</td>
-        <td>1658</td>
-        <td>Parco Foreste Casentinesi</td>
-    </tr>
-    <tr bgcolor="pink">
-        <td>Monte Falterona</td>
-        <td>1654</td>
-        <td>Parco Foreste Casentinesi</td>
-    </tr> -->
+
     </tbody>
-</table>
-<table style="display: inline; text-align: left; font-size:200%; padding-left: 5%; ">
+</table> -->
+<!-- <table style="display: inline; text-align: left; font-size:200%; padding-left: 5%; ">
     <thead>
     <tr>
         <th>Ready</th>
     </tr>
     </thead>
     <tbody id='table2-body'>
-<!--     <tr>
-        <td bgcolor="lightgreen">Monte Falco</td>
-    </tr>
-    <tr>
-        <td bgcolor="pink">Monte Falterona</td>
-    </tr> -->
+
     </tbody>
 </table>
 <table style="display: inline; text-align: left; font-size:200%; padding-left: 5%; ">
@@ -88,14 +79,9 @@
     </tr>
     </thead>
     <tbody id='table3-body'>
-<!--     <tr>
-        <td bgcolor="lightgreen">Monte Falco</td>
-    </tr>
-    <tr>
-        <td bgcolor="pink">Monte Falterona</td>
-    </tr> -->
+
     </tbody>
-</table>
+</table> -->
     <p style="font-size: 28px; text-align: left;padding-left: 10px" id='textarea'>
 
     </p>

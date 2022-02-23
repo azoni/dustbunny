@@ -872,6 +872,8 @@ async function get_competitor_bids(){
 async function redis_push_bids(){
 
 }
+document.getElementById('delay').value = 0
+
 async function get_redis_bids(){
 	if(values.default.ALCHEMY_KEY === undefined && bids_made % 1000 === 0){
 		create_seaport()
@@ -880,7 +882,7 @@ async function get_redis_bids(){
 		var redis_bids = await fetch('http://10.0.0.199:3000/test_call') 
 	  redis_bids = await redis_bids.json() 
 	  for(let asset of redis_bids){
-	  	// await sleep(250)
+	  	await sleep(document.getElementById('delay').value)
 	  	await competitor_bid(asset)
   		console.log(asset)
   	}
@@ -945,7 +947,7 @@ document.getElementById('competitor_bid19').addEventListener('click', function()
 	get_redis_bids()
 	get_redis_bids()
 })
-// document.getElementById('unstake_bid').value
+
 var bid_total_value = 0
 var good_set = ['cool-cats-nft', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'nft-worlds', 'clonex', 'doodles-official', 'cyberkongz']
 async function competitor_bid(asset){
