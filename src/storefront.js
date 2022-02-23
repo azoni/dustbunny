@@ -912,8 +912,22 @@ async function get_redis_floor(slug){
 	
 }
 // testcall()
-document.getElementById('competitor_bid').addEventListener('click', function(){	
-	swap()
+document.getElementById('competitor_bid22').addEventListener('click', function(){	
+	ADDRESS = '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'
+	reset()
+	start()
+	get_redis_bids()
+	get_redis_bids()
+})
+document.getElementById('competitor_bid20').addEventListener('click', function(){	
+	ADDRESS = '0x18a73AaEe970AF9A797D944A7B982502E1e71556'
+	reset()
+	start()
+	get_redis_bids()
+	get_redis_bids()
+})
+document.getElementById('competitor_bid19').addEventListener('click', function(){	
+	ADDRESS = '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628'
 	reset()
 	start()
 	get_redis_bids()
@@ -956,8 +970,8 @@ async function competitor_bid(asset){
 		await seaport.createBuyOrder({
 			asset: assets_data,
 			startAmount: bid_amount,
-			accountAddress: document.getElementById('unstake_bid').value,
-			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .5),
+			accountAddress: ADDRESS,
+			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .33),
 		})
 		bids_made += 1
 		bid_total_value += bid_amount
