@@ -916,14 +916,16 @@ async function get_redis_floor(slug){
 // testcall()
 var account_weth = 0
 var account_weth_temp = 0
-
+var first = 1
 async function get_account_weth(){
 	account_weth = await get_weth_balance(ADDRESS)
-	if(account_weth_temp !== account_weth){
+	if(account_weth_temp !== account_weth && first !== 1){
 		document.getElementById('account_name').style.color = 'red'
 	}
+	first = 0
 	account_weth_temp = account_weth
 	document.getElementById('account_weth').innerHTML = 'WETH: ' + account_weth.toFixed(2)
+	document.getElementById('account_weth').style.color = 'red'
 }
 document.getElementById('competitor_bid22').addEventListener('click', function(){	
 	ADDRESS = '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'
