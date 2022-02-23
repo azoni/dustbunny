@@ -880,7 +880,7 @@ async function get_redis_bids(){
 		var redis_bids = await fetch('http://10.0.0.199:3000/test_call') 
 	  redis_bids = await redis_bids.json() 
 	  for(let asset of redis_bids){
-	  	await sleep(250)
+	  	// await sleep(250)
 	  	await competitor_bid(asset)
   		console.log(asset)
   	}
@@ -949,7 +949,7 @@ async function competitor_bid(asset){
 	}
 	var min_range = .6
 	var max_range = .85
-
+	var exp_time = .33
 	if(good_set.includes(asset.slug)){
 		max_range = .9
 	}
@@ -978,12 +978,12 @@ async function competitor_bid(asset){
 			asset: assets_data,
 			startAmount: bid_amount,
 			accountAddress: ADDRESS,
-			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * .33),
+			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * exp_time),
 		})
 		bids_made += 1
 		bid_total_value += bid_amount
 		document.getElementById('stats').innerHTML = "Bids: " + bids_made + " Bid Total Value: " + bid_total_value.toFixed(4)
-		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a><br>"
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a>" + ' Exp: ' + (60 * exp_time).toFixed(0) + ' min' + "<br>"
 	} catch(e){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + '<br>'
 		console.log(e)
