@@ -938,6 +938,7 @@ document.getElementById('competitor_bid19').addEventListener('click', function()
 })
 // document.getElementById('unstake_bid').value
 var bid_total_value = 0
+var good_set = ['cool-cats-nft', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'nft-worlds', 'clonex', 'doodles-official', 'cyberkongz']
 async function competitor_bid(asset){
 	var slug = asset.slug
 	var fee = asset.fee
@@ -946,16 +947,19 @@ async function competitor_bid(asset){
 	if(bids_made % 10 === 0 && bids_made !== 0){
 		text_area.innerHTML = ""
 	}
-	
 	var min_range = .6
 	var max_range = .85
+
+	if(good_set.includes(asset.slug)){
+		max_range = .9
+	}
 	var min = floor * (min_range - fee)
 	var max = floor * (max_range - fee)
 	var top_bid = await get_top_bid_range_redis(asset, min, max)
 
 	var bid_amount = parseFloat(top_bid) + parseFloat(.001)
 	if(top_bid > max){
-		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " TOO HIGH: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a><br>"
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " TOO HIGH: " + bid_amount.toFixed(3) + 'Max: ' + max + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a><br>"
 		return 
 	}
 	try{
