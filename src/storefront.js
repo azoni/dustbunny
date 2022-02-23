@@ -877,7 +877,7 @@ async function get_redis_bids(){
 		create_seaport()
 	}
 	try{
-		var redis_bids = await fetch('http://10.0.0.172:3000/test_call') 
+		var redis_bids = await fetch('http://10.0.0.199:3000/test_call') 
 	  redis_bids = await redis_bids.json() 
 	  for(let asset of redis_bids){
 	  	await sleep(250)
