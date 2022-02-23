@@ -912,9 +912,16 @@ async function get_redis_floor(slug){
 	
 }
 // testcall()
+var account_weth = 0
+
+async function get_account_weth(){
+	account_weth = await get_weth_balance(ADDRESS)
+	document.getElementById('account_weth').innerHTML = 'WETH: ' + account_weth.toFixed(2)
+}
 document.getElementById('competitor_bid22').addEventListener('click', function(){	
 	ADDRESS = '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'
-	document.getElementById('account_name').innerHTML = 'DustBunny_22(82E7DF)'
+	get_account_weth()
+	document.getElementById('account_name').innerHTML = 'DustBunny_22(82E7DF) '
 	reset()
 	start()
 	get_redis_bids()
@@ -922,7 +929,8 @@ document.getElementById('competitor_bid22').addEventListener('click', function()
 })
 document.getElementById('competitor_bid20').addEventListener('click', function(){	
 	ADDRESS = '0x18a73AaEe970AF9A797D944A7B982502E1e71556'
-	document.getElementById('account_name').innerHTML = 'DustBunny_20(E71556)'
+	get_account_weth()
+	document.getElementById('account_name').innerHTML = 'DustBunny_20(E71556) '
 	reset()
 	start()
 	get_redis_bids()
@@ -930,7 +938,8 @@ document.getElementById('competitor_bid20').addEventListener('click', function()
 })
 document.getElementById('competitor_bid19').addEventListener('click', function(){	
 	ADDRESS = '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628'
-	document.getElementById('account_name').innerHTML = 'DustBunny_19(3A3628)'
+	get_account_weth()
+	document.getElementById('account_name').innerHTML = 'DustBunny_19(3A3628) '
 	reset()
 	start()
 	get_redis_bids()
@@ -944,8 +953,10 @@ async function competitor_bid(asset){
 	var fee = asset.fee
 	var floor = await get_redis_floor(asset.slug)
 	console.log(floor)
-	if(bids_made % 10 === 0 && bids_made !== 0){
+	if(bids_made % 20 === 0 && bids_made !== 0){
 		text_area.innerHTML = ""
+		get_gas()
+		get_account_weth()
 	}
 	var min_range = .6
 	var max_range = .85
@@ -959,7 +970,7 @@ async function competitor_bid(asset){
 
 	var bid_amount = parseFloat(top_bid) + parseFloat(.001)
 	if(top_bid > max){
-		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " TOO HIGH: " + bid_amount.toFixed(3) + 'Max: ' + max + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a><br>"
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " TOO HIGH: " + bid_amount.toFixed(3) + 'Max: ' + max.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a><br>"
 		return 
 	}
 	try{
