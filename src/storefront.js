@@ -774,7 +774,7 @@ async function get_top_bid_range_redis(a, min, max){
 			
 			var curr_bid = bid.basePrice/1000000000000000000
 			if(curr_bid > max){
-				continue
+				return curr_bid
 			}
 			if(curr_bid > top_bid){
 				top_bid = curr_bid
@@ -899,7 +899,8 @@ async function get_redis_floor(slug){
 } catch(e){
 	console.log(e)
 	await sleep(6000)
-	get_redis_floor(slug)
+	return get_redis_floor(slug)
+
 }
 	// try{
 	// 	var collection = await get_collection(slug)
@@ -936,7 +937,7 @@ async function competitor_bid(asset){
 	var top_bid = await get_top_bid_range_redis(asset, min, max)
 
 	var bid_amount = parseFloat(top_bid) + parseFloat(.001)
-	if(bid_amount > max){
+	if(top_bid > max){
 		text_area.innerHTML += 'TOP BID TOO HIGH'
 		return 
 	}
