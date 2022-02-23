@@ -6,11 +6,8 @@ const Network = opensea.Network;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3ProviderEngine = require("web3-provider-engine");
 const OpenSeaPort = opensea.OpenSeaPort;
-try{
-	const node_redis = require('redis')
-} catch(e){
-	console.log(e)
-}
+const node_redis = require('redis')
+
 
 const http = require('http')
 
@@ -362,15 +359,16 @@ const requestListener = function(req, res){
 	}
 }
 //172
-const server = http.createServer(requestListener)
-server.listen(3000, '10.0.0.172', () => {
-	console.log('Server is running')
-})
+// const server = http.createServer(requestListener)
+// server.listen(3000, '10.0.0.172', () => {
+// 	console.log('Server is running')
+// })
 
 async function dump_queue(){
 	client.DEL('queue:flash')
 	console.log(await client.LLEN("queue:flash"))
 }
+dump_queue()
 //http method - client pull
 async function test_call(){
 	return await client.lPopCount('queue:flash', 3)

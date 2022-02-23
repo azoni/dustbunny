@@ -752,6 +752,39 @@ async function transfer(item){
 	console.log(transactionHash)
 	swap()
 }
+async function get_top_bid_range_redis(a, min, max){
+	try{
+		const order = await seaport.api.getOrders({
+			asset_contract_address: a.token_address,
+			token_ids: a.token_id,
+			side: 0,
+			order_by: 'eth_price',
+			order_direction: 'desc',
+			limit: 50,
+		})
+		var orders = order.orders
+		var top_bid = min
+		for(var bid of orders){
+			try{
+				if(bid.makerAccount.address === document.getElementById('unstake_bid').value){
+				continue
+				} 
+			}catch(e) {
+			}
+			
+			var curr_bid = bid.basePrice/1000000000000000000
+			if(curr_bid > max){
+				continue
+			}
+			if(curr_bid > top_bid){
+				top_bid = curr_bid
+			}
+		}
+		return top_bid
+	} catch(e){
+		console.log(e)
+	}
+}
 async function sleep(ms){
 	await new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -865,6 +898,8 @@ async function get_redis_floor(slug){
 	  return parseFloat(await floor.text())
 } catch(e){
 	console.log(e)
+	await sleep(6000)
+	get_redis_floor(slug)
 }
 	// try{
 	// 	var collection = await get_collection(slug)
@@ -898,10 +933,12 @@ async function competitor_bid(asset){
 	var max_range = .8
 	var min = floor * (min_range - fee)
 	var max = floor * (max_range - fee)
-	// var top_bid = await get_top_bid_range(asset, min, max)
-	var bid_amount = parseFloat(asset.current_bid) + parseFloat(.001)
+	var top_bid = await get_top_bid_range_redis(asset, min, max)
+
+	var bid_amount = parseFloat(top_bid) + parseFloat(.001)
 	if(bid_amount > max){
-		return
+		text_area.innerHTML += 'TOP BID TOO HIGH'
+		return 
 	}
 	try{
 		var assets_data = {
