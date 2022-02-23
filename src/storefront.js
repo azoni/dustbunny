@@ -915,9 +915,14 @@ async function get_redis_floor(slug){
 }
 // testcall()
 var account_weth = 0
+var account_weth_temp = 0
 
 async function get_account_weth(){
 	account_weth = await get_weth_balance(ADDRESS)
+	if(account_weth_temp !== account_weth){
+		document.getElementById('account_name').style.color = 'red'
+	}
+	account_weth_temp = account_weth
 	document.getElementById('account_weth').innerHTML = 'WETH: ' + account_weth.toFixed(2)
 }
 document.getElementById('competitor_bid22').addEventListener('click', function(){	
