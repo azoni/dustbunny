@@ -752,6 +752,7 @@ async function transfer(item){
 	console.log(transactionHash)
 	swap()
 }
+var bidding_wallets = ['0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628']
 async function get_top_bid_range_redis(a, min, max){
 	try{
 		const order = await seaport.api.getOrders({
@@ -766,8 +767,8 @@ async function get_top_bid_range_redis(a, min, max){
 		var top_bid = min
 		for(var bid of orders){
 			try{
-				if(bid.makerAccount.address === document.getElementById('unstake_bid').value){
-				continue
+				if(bidding_wallets.includes(bid.makerAccount.address)){
+					return 'skip'
 				} 
 			}catch(e) {
 			}
@@ -927,7 +928,9 @@ async function get_account_weth(){
 	document.getElementById('account_weth').innerHTML = 'WETH: ' + account_weth.toFixed(2)
 	document.getElementById('account_weth').style.color = 'red'
 }
+var current_time = 0
 document.getElementById('competitor_bid22').addEventListener('click', function(){	
+	current_time = Math.floor(+new Date()/1000)
 	ADDRESS = '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'
 	get_account_weth()
 	document.getElementById('account_name').innerHTML = 'DustBunny_22(82E7DF) '
@@ -978,6 +981,9 @@ async function competitor_bid(asset){
 	var top_bid = await get_top_bid_range_redis(asset, min, max)
 
 	var bid_amount = parseFloat(top_bid) + parseFloat(.001)
+	if(top_bid === 'skip'){
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + "ALREADY TOP BID, Max: " + max.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a><br>"
+	}
 	if(top_bid > max){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " TOO HIGH: " + bid_amount.toFixed(3) + 'Max: ' + max.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a><br>"
 		return 
