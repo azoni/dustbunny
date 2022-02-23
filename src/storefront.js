@@ -914,6 +914,7 @@ async function get_redis_floor(slug){
 // testcall()
 document.getElementById('competitor_bid22').addEventListener('click', function(){	
 	ADDRESS = '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'
+	document.getElementById('account_name').innerHTML = 'DustBunny_22(82E7DF)'
 	reset()
 	start()
 	get_redis_bids()
@@ -921,6 +922,7 @@ document.getElementById('competitor_bid22').addEventListener('click', function()
 })
 document.getElementById('competitor_bid20').addEventListener('click', function(){	
 	ADDRESS = '0x18a73AaEe970AF9A797D944A7B982502E1e71556'
+	document.getElementById('account_name').innerHTML = 'DustBunny_20(E71556)'
 	reset()
 	start()
 	get_redis_bids()
@@ -928,6 +930,7 @@ document.getElementById('competitor_bid20').addEventListener('click', function()
 })
 document.getElementById('competitor_bid19').addEventListener('click', function(){	
 	ADDRESS = '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628'
+	document.getElementById('account_name').innerHTML = 'DustBunny_19(3A3628)'
 	reset()
 	start()
 	get_redis_bids()
