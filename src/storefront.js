@@ -894,7 +894,7 @@ async function get_redis_bids(){
 // if error call await get_collection(slug) .stats.floor_price
 async function get_redis_floor(slug){
 	try{
-		var floor = await fetch('http://10.0.0.172:3000/floor?name=' + slug) 
+		var floor = await fetch('http://10.0.0.199:3000/floor?name=' + slug) 
 	  return parseFloat(await floor.text())
 } catch(e){
 	console.log(e)
