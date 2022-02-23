@@ -931,14 +931,14 @@ async function competitor_bid(asset){
 	}
 	
 	var min_range = .6
-	var max_range = .8
+	var max_range = .85
 	var min = floor * (min_range - fee)
 	var max = floor * (max_range - fee)
 	var top_bid = await get_top_bid_range_redis(asset, min, max)
 
 	var bid_amount = parseFloat(top_bid) + parseFloat(.001)
 	if(top_bid > max){
-		text_area.innerHTML += 'TOP BID TOO HIGH'
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " TOO HIGH: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a><br>"
 		return 
 	}
 	try{
