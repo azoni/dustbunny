@@ -797,82 +797,11 @@ function get_ISOString_now(){
 	let search_time = Math.floor(+new Date())
 	return new Date(search_time).toISOString();
 }
-document.getElementById('get_competitor_bids').addEventListener('click', function(){	
-	get_competitor_bids()
-})
 
 var wallet_set = data.default.WATCH_LIST
 var wallet_orders = data.default.COMP_WALLETS
 var event_window = 60000
-async function get_competitor_bids(){
-	var start_time = Math.floor(+new Date())
-  // if(document.getElementById('event_window').value !== ''){
-  //   event_window = document.getElementById('event_window').value * 1000
-  // } 
-  // var start_time = Math.floor(+new Date() / 1000)
-  // if(document.getElementById('event_wallet').value !== ''){
-  //   wallet_orders = [document.getElementById('event_wallet').value]
-  // }
-  // if(document.getElementById('event_collection').value !== ''){
-  //   var collect_set = document.getElementById('event_collection').value
-  //   wallet_set = [collect_set]
-  // }
 
-  reset()
-  start()
-
-  let search_time = get_ISOString(event_window)
-  let search_time2 = get_ISOString_now()
-
-  console.log(search_time)
-  var counter = 0
-
-  for(var wallet in wallet_orders){
-  	await sleep(500)
-    var offset = 0
-    do{
-    	await sleep(500)
-	    try{
-		    const order = await seaport.api.getOrders({
-		      side: 0,
-		      order_by: 'created_date',
-		      maker: wallet_orders[wallet],
-		      listed_after: search_time,
-		      listed_before: search_time2,
-		      limit: 50,
-		      offset: offset
-		    })
-		    try{
-	        var username = order['orders'][0].makerAccount.user.username
-	        console.log(username)
-	      } catch(ex){
-	        username = 'Null'
-	      }
-	      console.log(order.orders)
-		    var order_length = order['orders'].length
-	    }
-	    catch(ex) {
-	      console.log(ex.message)
-	      console.log('error with buy orders')
-	    }
-	    counter += order_length
-	    offset += 50
-    } while(order_length === 50)
-    console.log(counter)
-  }
-  console.log(start_time)
-  var end_time = Math.floor(+new Date())
-  console.log(end_time)
-  console.log(end_time - start_time)
-  console.log(end_time - start_time < event_window)
-  if (end_time - start_time < event_window){
-  	await sleep((end_time - start_time))
-  }
-  get_competitor_bids()
-}
-async function redis_push_bids(){
-
-}
 document.getElementById('delay').value = 0
 
 async function get_redis_bids(){
@@ -901,7 +830,9 @@ async function get_redis_floor(slug){
 	  return parseFloat(await floor.text())
 } catch(e){
 	console.log(e)
+	document.getElementById('body').style.background = 'lightyellow'
 	await sleep(6000)
+	document.getElementById('body').style.background = 'lightgray'
 	return get_redis_floor(slug)
 
 }
@@ -1024,7 +955,9 @@ async function competitor_bid(asset){
 	} catch(e){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + '<br>'
 		console.log(e)
-		await sleep(30000)
+		document.getElementById('body').style.background = 'pink'
+		await sleep(60000)
+		document.getElementById('body').style.background = 'lightgray'
 	}
 }
 function create_seaport(){
