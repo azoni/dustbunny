@@ -940,6 +940,7 @@ document.getElementById('competitor_bid22').addEventListener('click', function()
 	get_redis_bids()
 })
 document.getElementById('competitor_bid20').addEventListener('click', function(){	
+	current_time = Math.floor(+new Date()/1000)
 	ADDRESS = '0x18a73AaEe970AF9A797D944A7B982502E1e71556'
 	get_account_weth()
 	document.getElementById('account_name').innerHTML = 'DustBunny_20(E71556) '
@@ -949,6 +950,7 @@ document.getElementById('competitor_bid20').addEventListener('click', function()
 	get_redis_bids()
 })
 document.getElementById('competitor_bid19').addEventListener('click', function(){	
+	current_time = Math.floor(+new Date()/1000)
 	ADDRESS = '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628'
 	get_account_weth()
 	document.getElementById('account_name').innerHTML = 'DustBunny_19(3A3628) '
@@ -959,6 +961,8 @@ document.getElementById('competitor_bid19').addEventListener('click', function()
 })
 
 var bid_total_value = 0
+var bpm = 0
+var runtime = 0
 var good_set = ['cool-cats-nft', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'nft-worlds', 'clonex', 'doodles-official', 'cyberkongz']
 async function competitor_bid(asset){
 	var slug = asset.slug
@@ -966,6 +970,8 @@ async function competitor_bid(asset){
 	var floor = await get_redis_floor(asset.slug)
 	console.log(floor)
 	if(bids_made % 20 === 0 && bids_made !== 0){
+		runtime = Math.floor(+new Date()/1000) - current_time
+		bpm = bids_made/(runtime/60)
 		text_area.innerHTML = ""
 		get_gas()
 		get_account_weth()
@@ -1008,7 +1014,7 @@ async function competitor_bid(asset){
 		})
 		bids_made += 1
 		bid_total_value += bid_amount
-		document.getElementById('stats').innerHTML = "Bids: " + bids_made + " Bid Total Value: " + bid_total_value.toFixed(4)
+		document.getElementById('stats').innerHTML = "Bids: " + bids_made  + ' | BPM: ' + bpm.toFixed() + " | Bid Total Value: " + bid_total_value.toFixed(2) + ' | Avg bid: ' + (bid_total_value/bids_made).toFixed(2) 
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a>" + ' Exp: ' + (60 * exp_time).toFixed(0) + ' min' + "<br>"
 	} catch(e){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + '<br>'
