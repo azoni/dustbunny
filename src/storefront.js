@@ -925,8 +925,14 @@ async function get_account_weth(){
 	}
 	first = 0
 	account_weth_temp = account_weth
-	document.getElementById('account_weth').innerHTML = 'WETH: ' + account_weth.toFixed(2)
-	document.getElementById('account_weth').style.color = 'red'
+	try{
+		document.getElementById('account_weth').innerHTML = 'WETH: ' + account_weth.toFixed(2)
+		document.getElementById('account_weth').style.color = 'red'
+	} catch(e){
+		await sleep(6000)
+		return get_account_weth()
+	}
+	
 }
 var current_time = 0
 document.getElementById('competitor_bid22').addEventListener('click', function(){	
@@ -976,7 +982,6 @@ async function competitor_bid(asset){
 	if(bids_made % 100 === 0 && bids_made !== 0){
 		runtime = Math.floor(+new Date()/1000) - current_time
 		bpm = bids_made/(runtime/60)
-		get_gas()
 		get_account_weth()
 	}
 	var min_range = .6
