@@ -974,6 +974,7 @@ async function competitor_bid(asset){
 			await sleep(60000)
 		} else if (msg === 1){
 			await sleep(30000)
+			return competitor_bid(asset)
 		}
 		await sleep(1000)
 		document.getElementById('body').style.background = 'lightgray'
