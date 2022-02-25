@@ -820,6 +820,10 @@ async function get_redis_bids(){
 
 } catch(e){
 	console.log(e)
+	document.getElementById('body').style.background = 'lightyellow'
+	await sleep(6000)
+	document.getElementById('body').style.background = 'lightgray'
+	return get_redis_bids()
 }
   
 }
