@@ -967,11 +967,46 @@ async function competitor_bid(asset){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a>" + ' Exp: ' + (60 * exp_time).toFixed(0) + ' min | type: ' + asset.event_type + "<br>"
 	} catch(e){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '<br>'
-		console.log(e)
+		console.log(e.message)
 		document.getElementById('body').style.background = 'pink'
-		await sleep(60000)
+		var msg = check_errors(e.message)
+		if(msg === 0){
+			await sleep(60000)
+		} else if (msg === 1){
+			await sleep(30000)
+		}
+		await sleep(1000)
 		document.getElementById('body').style.background = 'lightgray'
 	}
+}
+function check_errors(msg){
+  if(msg.includes('Insufficient balance.')){
+    return 'Insufficient balance. Please wrap more ETH.'
+    //alert('Insufficient balance. Please wrap more ETH.')
+  }
+  else if(msg.includes('Invalid JSON RPC response')){
+    return 'Invalid JSON RPC response'
+  }
+  else if(msg.includes('Error: API Error 400: Order already exists')){
+    return 'Error: API Error 400: Order already exists'
+  }
+  else if(msg.includes('This order does not have a valid bid price for the auction')){
+    return 'Auction'
+  }
+  else if(msg.includes('API Error 404: Not found.')){
+    return 'Asset not found.'
+  } else if(msg.includes('Trading is not enabled for')){
+    return 'Trading not enalbed on asset.'
+  } else if(msg.includes('Internal server error')){
+    return 'Internal server error.'
+  } else if(msg.includes('has too many outstanding orders.') || msg.includes('Outstanding order to wallet balance')){
+    return 1
+  } else if(msg.includes('Bid amount is not 5.0% higher than the previous bid')){
+    return 'Bid amount is not 5.0% higher than the previous bid'
+  } else if(msg.includes('Cannot read properties of undefined')){
+      return "Cannot read properties of undefined"
+  }
+  return 0
 }
 function create_seaport(){
   providerEngine.stop();
