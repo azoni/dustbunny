@@ -704,7 +704,7 @@ async function get_top_bid_range_redis(a, min, max){
 		}
 		return top_bid
 	} catch(e){
-		console.log(e)
+		console.log(e.message)
 		document.getElementById('body').style.background = 'orange'
 		await sleep(30000)
 		document.getElementById('body').style.background = 'lightgreen'
