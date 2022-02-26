@@ -202,9 +202,6 @@ document.getElementById('balances').addEventListener('click', async function(){
 
 	
 	for(var account of values.default.OWNER_ADDRESS){
-		if(account.username === 'Azoni'){
-			continue
-		}
 		var running = await current_running(account)
 		var acct = {}
 		var success = await test_bid(account.address)
@@ -587,7 +584,7 @@ async function display(){
 
 				//Button to list
 				var button = document.createElement('button')
-				button.id = asset.collection.slug + ' ' + asset.tokenId + ' ' + asset.tokenAddress
+				button.id = asset.collection.slug + ' ' + asset.tokenId + ' ' + asset.tokenAddress + ' ' + asset.owner.address + ' extra'
 				input.id = asset.collection.slug + '' + asset.tokenId
 				button.addEventListener('click', function(){	
 					sell_order(this.id.split(' '))
@@ -627,9 +624,7 @@ async function display(){
 		}
 	}
 	console.log(eth_value)
-	console.log(count)
-	document.getElementById('account').innerHTML = 'Total ' + balance.toFixed(4) + ' ETH ' + weth_balance.toFixed(4) + ' WETH NFTs: ' + count + ' Value(Based on Floor): ' + eth_value
-	
+	console.log(count)	
 }
 // document.getElementById('refresh').addEventListener('click', display)
 // document.getElementById('search').addEventListener('input', search)
@@ -651,7 +646,7 @@ async function sell_order(item){
 					tokenAddress: item[2], // CryptoKitties
 					tokenId: item[1], // Token ID
 			    },
-				accountAddress: ADDRESS,
+				accountAddress: item[3],
 				startAmount: document.getElementById(item[0]+item[1]).value,
 			})
 			console.log(auction)
