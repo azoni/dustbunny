@@ -676,6 +676,7 @@ async function transfer(item){
 var bidding_wallets = ['0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628']
 async function get_top_bid_range_redis(a, min, max){
 	try{
+		await sleep(100)
 		const order = await seaport.api.getOrders({
 			asset_contract_address: a.token_address,
 			token_ids: a.token_id,
@@ -704,11 +705,11 @@ async function get_top_bid_range_redis(a, min, max){
 		}
 		return top_bid
 	} catch(e){
-		console.log(e.message)
-		document.getElementById('body').style.background = 'orange'
-		await sleep(30000)
-		document.getElementById('body').style.background = 'lightgreen'
-		return get_top_bid_range_redis(a, min, max)
+			console.log(e.message)
+			document.getElementById('body').style.background = 'orange'
+			await sleep(30000)
+			document.getElementById('body').style.background = 'lightgreen'
+			return get_top_bid_range_redis(a, min, max)
 	}
 }
 async function sleep(ms){
