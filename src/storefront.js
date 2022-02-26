@@ -707,7 +707,7 @@ async function get_top_bid_range_redis(a, min, max){
 	} catch(e){
 			console.log(e.message)
 			document.getElementById('body').style.background = 'orange'
-			await sleep(30000)
+			await sleep(6000)
 			document.getElementById('body').style.background = 'lightgreen'
 			return get_top_bid_range_redis(a, min, max)
 	}
@@ -731,7 +731,7 @@ var event_window = 60000
 document.getElementById('delay').value = 0
 
 async function get_redis_bids(){
-	if(values.default.ALCHEMY_KEY === undefined && bids_made % 1000 === 0){
+	if(values.default.ALCHEMY_KEY === undefined && bids_made % 1000 === 0 && bids_made !== 0){
 		create_seaport()
 	}
 	try{
@@ -744,7 +744,7 @@ async function get_redis_bids(){
   get_redis_bids()
 
 } catch(e){
-	console.log(e)
+	console.log(e.message)
 	document.getElementById('body').style.background = 'lightsalmon'
 	await sleep(3000)
 	document.getElementById('body').style.background = 'lightgreen'
@@ -757,22 +757,25 @@ async function get_redis_floor(slug){
 	try{
 		var floor = await fetch('http://10.0.0.199:3000/floor?name=' + slug) 
 	  return parseFloat(await floor.text())
-} catch(e){
-	console.log(e)
-	document.getElementById('body').style.background = 'lightsalmon'
-	await sleep(6000)
-	document.getElementById('body').style.background = 'lightgreen'
-	return get_redis_floor(slug)
-
+	} catch(e){
+		console.log(e.message)
+		document.getElementById('body').style.background = 'lightsalmon'
+		await sleep(6000)
+		document.getElementById('body').style.background = 'lightgreen'
+		return get_redis_floor(slug)
+	}
 }
-	// try{
-	// 	var collection = await get_collection(slug)
-	// 	console.log(collection)
-	// 	return collection.collection.stats.floor_price
-	// } catch (e){
-	// 	console.log(e)
-	// }
-	
+async function get_redis_length(){
+	try{
+		var length = await fetch('http://10.0.0.199:3000/length') 
+	  return parseFloat(await length.text())
+	} catch(e){
+		console.log(e.message)
+		document.getElementById('body').style.background = 'lightsalmon'
+		await sleep(6000)
+		document.getElementById('body').style.background = 'lightgreen'
+		return get_redis_length()
+	}
 }
 // testcall()
 var account_weth = 0
@@ -896,7 +899,8 @@ async function competitor_bid(asset){
 		bids_made += 1
 		bids_made_hour += 1
 		bid_total_value += bid_amount
-		document.getElementById('stats').innerHTML = "Bids: " + bids_made  + ' | BPM: ' + bpm.toFixed() + " BPM_H: " + bpm_hour.toFixed() + " | Bid Total Value: " + bid_total_value.toFixed(2) + ' | Avg bid: ' + (bid_total_value/bids_made).toFixed(2) 
+		var queue_length = await get_redis_length()
+		document.getElementById('stats').innerHTML = "Bids: " + bids_made  + ' | BPM: ' + bpm.toFixed() + " BPM_H: " + bpm_hour.toFixed() + " | Bid Total Value: " + bid_total_value.toFixed(2) + ' | Avg bid: ' + (bid_total_value/bids_made).toFixed(2) + ' | Queue size: ' + queue_length
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a>" + ' Exp: ' + (60 * exp_time).toFixed(0) + ' min | type: ' + asset.event_type + "<br>"
 	} catch(e){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '<br>'
