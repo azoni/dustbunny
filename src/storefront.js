@@ -836,6 +836,7 @@ var bpm_hour = 0
 var runtime = 0
 var runtime_hour = 0
 var bids_made_hour = 0
+var queue_length = 0
 var good_set = ['cool-cats-nft', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'nft-worlds', 'clonex', 'doodles-official', 'cyberkongz']
 async function competitor_bid(asset){
 	var slug = asset.slug
@@ -843,6 +844,7 @@ async function competitor_bid(asset){
 	var floor = await get_redis_floor(asset.slug)
 	console.log(floor)
 	if(bids_made % 20 === 0 && bids_made !== 0){
+		queue_length = await get_redis_length()
 		text_area.innerHTML = ""
 		runtime = Math.floor(+new Date()/1000) - current_time
 		runtime_hour = Math.floor(+new Date()/1000) - current_time_hour
@@ -899,7 +901,7 @@ async function competitor_bid(asset){
 		bids_made += 1
 		bids_made_hour += 1
 		bid_total_value += bid_amount
-		var queue_length = await get_redis_length()
+		
 		document.getElementById('stats').innerHTML = "Bids: " + bids_made  + ' | BPM: ' + bpm.toFixed() + " BPM_H: " + bpm_hour.toFixed() + " | Bid Total Value: " + bid_total_value.toFixed(2) + ' | Avg bid: ' + (bid_total_value/bids_made).toFixed(2) + ' | Queue size: ' + queue_length
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a>" + ' Exp: ' + (60 * exp_time).toFixed(0) + ' min | type: ' + asset.event_type + "<br>"
 	} catch(e){
