@@ -240,7 +240,6 @@ const values = {
                 'white tux': [.9, .925],
                 'abstract hoodie': [.9, .925],
                 'dark ninja': [.9, .925],
-                'imperial': [.9, .925],
                 'scuba': [.9, .925],
                 'biohazard': [.9, .925],
                 'imperial': [.9, .925],
