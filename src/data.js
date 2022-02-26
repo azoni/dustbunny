@@ -371,10 +371,6 @@ const values = {
 	'0x5bcfc791b9baa68e9aa50eb98e555304ad53d697'],
 	OWNER_ADDRESS: [
 		{
-			username: 'Azoni',
-			address: '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
-		}, 
-		{
 			username: 'DustBunny',
 			address: '0xb1cbed4ab864e9215206cc88c5f758fda4e01e25'
 		}, 
