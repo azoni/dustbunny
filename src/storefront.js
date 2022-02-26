@@ -79,21 +79,6 @@ function change_seaport(MNEMONIC){
 	providerEngine.start()
 }
 
-document.getElementById('swap').addEventListener('click', swap)
-
-function swap(){
-	if(document.getElementById('account_name').innerHTML === 'Azoni'){
-		document.getElementById('account_name').innerHTML = 'DustBunny'
-		const MNEMONIC = secret.default.MNEMONIC
-		change_seaport(MNEMONIC)
-		ADDRESS = '0xb1cbed4ab864e9215206cc88c5f758fda4e01e25'
-	} else {
-		document.getElementById('account_name').innerHTML = 'Azoni'
-		const MNEMONIC = secret.default.MNEMONIC2
-		change_seaport(MNEMONIC)
-		ADDRESS = '0xcae462347cd2d83f9a548afacb2ca6e0c6063bff'
-	}
-}
 var acct_dict = {}
 // document.getElementById('test').addEventListener('click', async function(){
 // 	for(var address of values.default.OWNER_ADDRESS){
@@ -130,9 +115,7 @@ async function test_bid(address){
 	}
 	return 'fail'
 }
-document.getElementById('unstake').addEventListener('click', function(){	
-	test_unstake_bid()
-})
+
 // document.getElementById('refresh').addEventListener('click', function(){	
 // 	display()
 // })
@@ -213,7 +196,6 @@ async function get_weth_balance(address){
 let text_area = document.getElementById('textarea')
 //account for account running multiple sets
 document.getElementById('balances').addEventListener('click', async function(){
-	swap()
 	var table1 = document.getElementById('table1-body')
 	var table2 = document.getElementById('table2-body')
 	var table3 = document.getElementById('table3-body')
@@ -286,67 +268,8 @@ document.getElementById('balances').addEventListener('click', async function(){
 	// console.log("Eth: " + balance)
 	// console.log("Weth: " + weth_balance)
 	// console.log(acct_dict)
-	swap()
-
 })
 
-var staking_sets = {
-	'sneaky-vampire-syndicate' : '0x12753244901f9e612a471c15c7e5336e813d2e0b',
-	'sappy-seals': '0xdf8a88212ff229446e003f8f879e263d3616b57a',
-	'metroverse': '0xab93f992d9737bd740113643e79fe9f8b6b34696',
-	'genesis-creepz': '0xc3503192343eae4b435e4a1211c5d28bf6f6a696',
-	'coolmonkes': '0xed6552d7e16922982bf80cf43090d71bb4ec2179',
-	'anonymice': '0x000000000000000000000000000000000000dead',
-	'critterznft': '0x6714de8aa0db267552eb5421167f5d77f0c05c6d',
-}
-var block = 14193046
-async function get_latest_block(){
-	
-	var current_time = Math.floor(+new Date()/1000)
-	const block_response = await fetch("https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=" + current_time + "&closest=before&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
-	const block_data = await block_response.json()
-	if(block === block_data.result){
-		block = parseInt(block) + parseInt(1)
-	} else {
-		block = block_data.result
-	}
-	
-}
-
-// test_unstake_bid()
-async function test_unstake_bid(){
-	get_latest_block()
-	//startblock + 1 to avoid repeat
-	for(var set in staking_sets){
-		await new Promise(resolve => setTimeout(resolve, 500))
-		var collection = await get_collection(set)
-		collection = collection.collection
-		
-		const response = await fetch("https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=" + collection.primary_asset_contracts[0].address + "&page=1&startblock=" + block + "&offset=100&sort=desc&apikey=AXQRW5QJJ5KW4KFAKC9UH85J9ZFDTB95KQ");
-		const data = await response.json()
-		console.log(data.result)
-		var bid_amount = collection.stats.floor_price * (.9 - collection.dev_seller_fee_basis_points/10000)
-		for(let tx of data.result){	
-			if(tx.from === staking_sets[set]){
-				
-				bid(set, tx.tokenName, tx.tokenID, collection.primary_asset_contracts[0].address, bid_amount)
-				console.log('--------------------------------------------------------')
-				console.log('--------------------------------------------------------')
-				console.log('--------------------------------------------------------')
-				console.log('--------------------------------------------------------')
-				console.log(tx.tokenName + ' ' + tx.tokenID + ' ' + collection.stats.floor_price)
-				console.log('--------------------------------------------------------')
-				console.log('--------------------------------------------------------')
-				console.log('--------------------------------------------------------')
-				console.log('--------------------------------------------------------')
-			}
-		}
-		console.log(set + ' ' + collection.stats.floor_price + ' bid: ' + bid_amount + ' block ' + block)
-	}
-	
-	await new Promise(resolve => setTimeout(resolve, 5000))
-	test_unstake_bid()
-}
 
 async function bid(set, name, token_id, contract_address, bid_amount){
 	try{
@@ -740,7 +663,6 @@ async function sell_order(item){
 	}	
 }
 async function transfer(item){
-	swap()
 	const transactionHash = await seaport.transfer({
 		asset: {
 			tokenAddress: item[2], // CryptoKitties
@@ -750,7 +672,6 @@ async function transfer(item){
 		toAddress:  ADDRESS
 	})
 	console.log(transactionHash)
-	swap()
 }
 var bidding_wallets = ['0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', '0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628']
 async function get_top_bid_range_redis(a, min, max){
@@ -784,9 +705,9 @@ async function get_top_bid_range_redis(a, min, max){
 		return top_bid
 	} catch(e){
 		console.log(e)
-		document.getElementById('body').style.background = 'pink'
-		await sleep(6000)
-		document.getElementById('body').style.background = 'lightgray'
+		document.getElementById('body').style.background = 'orange'
+		await sleep(30000)
+		document.getElementById('body').style.background = 'lightgreen'
 		return get_top_bid_range_redis(a, min, max)
 	}
 }
@@ -824,9 +745,9 @@ async function get_redis_bids(){
 
 } catch(e){
 	console.log(e)
-	document.getElementById('body').style.background = 'lightyellow'
+	document.getElementById('body').style.background = 'lightsalmon'
 	await sleep(6000)
-	document.getElementById('body').style.background = 'lightgray'
+	document.getElementById('body').style.background = 'lightgreen'
 	return get_redis_bids()
 }
   
@@ -838,9 +759,9 @@ async function get_redis_floor(slug){
 	  return parseFloat(await floor.text())
 } catch(e){
 	console.log(e)
-	document.getElementById('body').style.background = 'lightyellow'
+	document.getElementById('body').style.background = 'lightsalmon'
 	await sleep(6000)
-	document.getElementById('body').style.background = 'lightgray'
+	document.getElementById('body').style.background = 'lightgreen'
 	return get_redis_floor(slug)
 
 }
@@ -873,41 +794,45 @@ async function get_account_weth(){
 	}
 	
 }
+//values.default.
 var current_time = 0
-document.getElementById('competitor_bid22').addEventListener('click', function(){	
+var current_time_hour = 0
+async function start_bids(address, user_data){
+	document.getElementById('body').style.background = 'lightgreen'
+	ADDRESS = address
 	current_time = Math.floor(+new Date()/1000)
-	ADDRESS = '0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF'
+	current_time_hour = Math.floor(+new Date()/1000)
 	get_account_weth()
-	document.getElementById('account_name').innerHTML = 'DustBunny_22(82E7DF) '
+	document.getElementById('account_name').innerHTML = user_data + ' '
+	await sleep(3000)
 	reset()
 	start()
 	get_redis_bids()
 	get_redis_bids()
+}
+if(values.default.START_ACCOUNT !== undefined){
+	let display_account = values.default.START_ACCOUNT.address
+	let display_name = values.default.START_ACCOUNT.username + '(' + display_account.substring((display_account.length - 6)) + ')'
+
+	start_bids(values.default.START_ACCOUNT.address, display_name)
+
+}
+document.getElementById('competitor_bid22').addEventListener('click', function(){	
+	start_bids('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', 'DustBunny_22(82E7DF) ')
 })
 document.getElementById('competitor_bid20').addEventListener('click', function(){	
-	current_time = Math.floor(+new Date()/1000)
-	ADDRESS = '0x18a73AaEe970AF9A797D944A7B982502E1e71556'
-	get_account_weth()
-	document.getElementById('account_name').innerHTML = 'DustBunny_20(E71556) '
-	reset()
-	start()
-	get_redis_bids()
-	get_redis_bids()
+	start_bids('0x18a73AaEe970AF9A797D944A7B982502E1e71556', 'DustBunny_20(E71556) ')
 })
 document.getElementById('competitor_bid19').addEventListener('click', function(){	
-	current_time = Math.floor(+new Date()/1000)
-	ADDRESS = '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628'
-	get_account_weth()
-	document.getElementById('account_name').innerHTML = 'DustBunny_19(3A3628) '
-	reset()
-	start()
-	get_redis_bids()
-	get_redis_bids()
+	start_bids('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', 'DustBunny_19(3A3628) ')
 })
 
 var bid_total_value = 0
 var bpm = 0
+var bpm_hour = 0
 var runtime = 0
+var runtime_hour = 0
+var bids_made_hour = 0
 var good_set = ['cool-cats-nft', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'nft-worlds', 'clonex', 'doodles-official', 'cyberkongz']
 async function competitor_bid(asset){
 	var slug = asset.slug
@@ -916,11 +841,18 @@ async function competitor_bid(asset){
 	console.log(floor)
 	if(bids_made % 20 === 0 && bids_made !== 0){
 		text_area.innerHTML = ""
+		runtime = Math.floor(+new Date()/1000) - current_time
+		runtime_hour = Math.floor(+new Date()/1000) - current_time_hour
+		bpm = bids_made/(runtime/60)
+		bpm_hour = bids_made/(runtime_hour/60)
+		if(runtime > 3600) {
+			bids_made_hour = 0
+			current_time_hour = Math.floor(+new Date()/1000)
+		}
 		get_gas()
 	}
 	if(bids_made % 100 === 0 && bids_made !== 0){
-		runtime = Math.floor(+new Date()/1000) - current_time
-		bpm = bids_made/(runtime/60)
+
 		get_account_weth()
 	}
 	var min_range = .6
@@ -962,8 +894,9 @@ async function competitor_bid(asset){
 			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * exp_time),
 		})
 		bids_made += 1
+		bids_made_hour += 1
 		bid_total_value += bid_amount
-		document.getElementById('stats').innerHTML = "Bids: " + bids_made  + ' | BPM: ' + bpm.toFixed() + " | Bid Total Value: " + bid_total_value.toFixed(2) + ' | Avg bid: ' + (bid_total_value/bids_made).toFixed(2) 
+		document.getElementById('stats').innerHTML = "Bids: " + bids_made  + ' | BPM: ' + bpm.toFixed() + " BPM_H: " + bpm_hour.toFixed() + " | Bid Total Value: " + bid_total_value.toFixed(2) + ' | Avg bid: ' + (bid_total_value/bids_made).toFixed(2) 
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a>" + ' Exp: ' + (60 * exp_time).toFixed(0) + ' min | type: ' + asset.event_type + "<br>"
 	} catch(e){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '<br>'
@@ -973,11 +906,12 @@ async function competitor_bid(asset){
 		if(msg === 0){
 			await sleep(60000)
 		} else if (msg === 1){
+			document.getElementById('body').style.background = 'yellow'
 			await sleep(30000)
 			return competitor_bid(asset)
 		}
 		await sleep(1000)
-		document.getElementById('body').style.background = 'lightgray'
+		document.getElementById('body').style.background = 'lightgreen'
 	}
 }
 function check_errors(msg){
