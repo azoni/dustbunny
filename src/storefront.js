@@ -740,14 +740,13 @@ async function get_redis_bids(){
 	  for(let asset of redis_bids){
 	  	await sleep(document.getElementById('delay').value)
 	  	await competitor_bid(asset)
-  		console.log(asset)
   	}
   get_redis_bids()
 
 } catch(e){
 	console.log(e)
 	document.getElementById('body').style.background = 'lightsalmon'
-	await sleep(6000)
+	await sleep(3000)
 	document.getElementById('body').style.background = 'lightgreen'
 	return get_redis_bids()
 }
