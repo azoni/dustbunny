@@ -686,12 +686,14 @@ async function get_top_bid_range_redis(a, min, max){
 		})
 		var orders = order.orders
 		var top_bid = min
+		var first = true
 		for(var bid of orders){
 			try{
-
-				if(bidding_wallets.includes(bid.makerAccount.address.toLowerCase())){
+				if(bidding_wallets.includes(bid.makerAccount.address.toLowerCase()) && first === true){
 					return 'skip'
-				} 
+				} else {
+					first = false
+				}
 			}catch(e) {
 			}
 			
