@@ -873,10 +873,12 @@ async function competitor_bid(asset){
 	var bid_amount = parseFloat(top_bid) + parseFloat(.001)
 	if(top_bid === 'skip'){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + "ALREADY TOP BID, Max: " + max.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + ' type: ' + asset.event_type + "</a><br>"
+		await sleep(500)
 		return
 	}
 	if(top_bid > max){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " TOO HIGH: " + bid_amount.toFixed(3) + 'Max: ' + max.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + ' type: ' + asset.event_type + "</a><br>"
+		await sleep(500)
 		return 
 	}
 	if(top_bid < account_weth)
@@ -914,6 +916,7 @@ async function competitor_bid(asset){
 		} else if (msg === 1){
 			document.getElementById('body').style.background = 'yellow'
 			await sleep(30000)
+			document.getElementById('body').style.background = 'lightgreen'
 			return competitor_bid(asset)
 		}
 		await sleep(1000)
