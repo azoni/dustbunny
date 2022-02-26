@@ -38,7 +38,7 @@ var providerEngine = new Web3ProviderEngine();
 providerEngine.addProvider(mnemonicWalletSubprovider);
 providerEngine.addProvider(infuraRpcSubprovider);
 
-values.default.OWNER_ADDRESS = data.default.OWNER_ADDRESS
+// values.default.OWNER_ADDRESS = data.default.OWNER_ADDRESS
 
 var seaport = new OpenSeaPort(
 
