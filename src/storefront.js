@@ -515,7 +515,7 @@ async function get_redis_bids(){
 // if error call await get_collection(slug) .stats.floor_price
 async function get_redis_floor(slug){
 	try{
-		var floor = await fetch('http://10.0.0.199:3000/floor?name=' + slug) 
+		var floor = await fetch('http://10.0.0.202:3000/floor?name=' + slug) 
 	  return parseFloat(await floor.text())
 	} catch(e){
 		console.log(e.message)
@@ -527,7 +527,7 @@ async function get_redis_floor(slug){
 }
 async function get_redis_length(){
 	try{
-		var length = await fetch('http://10.0.0.199:3000/length') 
+		var length = await fetch('http://10.0.0.202:3000/length') 
 	  return parseFloat(await length.text())
 	} catch(e){
 		console.log(e.message)
@@ -632,7 +632,7 @@ async function competitor_bid(asset){
 	}
 	var min = floor * (min_range - fee)
 	var max = floor * (max_range - fee)
-	var top_bid = await get_top_bid_range_redis(asset, min, max)
+	var top_bid = min
 	if(asset['expiration']){
 		exp_time = asset['expiration']
 	}
@@ -641,6 +641,8 @@ async function competitor_bid(asset){
 	}
 	if(asset['bid_amount']){
 		top_bid = asset['bid_amount']
+	} else {
+		top_bid = await get_top_bid_range_redis(asset, min, max)
 	}
 	var bid_amount = parseFloat(top_bid) + parseFloat(.002)
 	if(top_bid === 'skip'){
@@ -655,6 +657,7 @@ async function competitor_bid(asset){
 	}
 	if(top_bid < account_weth)
 	try{
+		await sleep(100)
 		var assets_data = {
 			tokenId: asset.token_id,
 			tokenAddress: asset.token_address,
