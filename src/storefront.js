@@ -490,7 +490,7 @@ async function sleep(ms){
 	await new Promise(resolve => setTimeout(resolve, ms))
 }
 
-document.getElementById('delay').value = 0
+document.getElementById('delay').value = 250
 async function get_redis_bids(){
 	if(values.default.ALCHEMY_KEY === undefined && bids_made % 1000 === 0 && bids_made !== 0){
 		create_seaport()
