@@ -604,7 +604,6 @@ var runtime_hour = 0
 var bids_made_hour = 0
 var queue_length = 0
 var good_set = ['cool-cats-nft', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'nft-worlds', 'clonex', 'doodles-official', 'cyberkongz']
-var next_account = 1
 async function competitor_bid(asset){
 	var fee = asset.fee
 	var floor = await get_redis_floor(asset.slug)
@@ -692,13 +691,10 @@ async function competitor_bid(asset){
 		} else if (msg === 1){
 			document.getElementById('body').style.background = 'yellow'
 			if(getRandomInt(3) === 1){
+				var random_index = getRandomInt(3)
 				console.log('Changing accounts')
-				ADDRESS = bidding_wallets[next_account]
-				let display_username  = wallet_names[next_account]
-				next_account += 1
-				if(next_account === bidding_wallets.length){
-					next_account = 0
-				}
+				ADDRESS = bidding_wallets[random_index]
+				let display_username  = wallet_names[random_index]
 				let display_name = display_username + '(' + ADDRESS.substring((ADDRESS.length - 6)).toUpperCase() + ')'
 				document.getElementById('account_name').innerHTML = display_name + ' '
 			}
