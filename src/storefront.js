@@ -472,7 +472,7 @@ async function get_top_bid_range_redis(a, min, max){
 			
 			var curr_bid = bid.basePrice/1000000000000000000
 			if(curr_bid > max){
-				return curr_bid
+				continue
 			}
 			if(curr_bid > top_bid){
 				top_bid = curr_bid
@@ -522,10 +522,22 @@ async function get_redis_bids(){
 }
   
 }
+async function get_collection(slug){
+  try{
+    const collect = await seaport.api.get('/api/v1/collection/' + slug)
+    return collect
+  } catch (ex) {
+    console.log("couldn't get collection")
+  }  
+}
 // if error call await get_collection(slug) .stats.floor_price
 async function get_redis_floor(slug){
 	try{
 		var floor = await fetch('http://10.0.0.202:3000/floor?name=' + slug) 
+		if(floor === null){
+			let collection = await get_collection(slug)
+			return collection.stats.floor_price
+		}
 	  return parseFloat(await floor.text())
 	} catch(e){
 		console.log(e.message)
