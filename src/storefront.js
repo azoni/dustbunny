@@ -489,9 +489,19 @@ async function get_top_bid_range_redis(a, min, max){
 async function sleep(ms){
 	await new Promise(resolve => setTimeout(resolve, ms))
 }
-
+var stop_run = 0
+document.getElementById('stop_run').addEventListener('click', function(){	
+	stop_run = 1
+	reset()
+	document.getElementById('body').style.background = 'lightgray'
+	text_area.innerHTML = ""
+	document.getElementById('stats').innerHTML = 'stats'
+})
 document.getElementById('delay').value = 250
 async function get_redis_bids(){
+	if(stop_run === 1){
+		return
+	}
 	if(values.default.ALCHEMY_KEY === undefined && bids_made % 1000 === 0 && bids_made !== 0){
 		create_seaport()
 	}
