@@ -533,12 +533,13 @@ async function get_collection(slug){
 // if error call await get_collection(slug) .stats.floor_price
 async function get_redis_floor(slug){
 	try{
-		var floor = await fetch('http://10.0.0.202:3000/floor?name=' + slug) 
-		if(floor === null){
+		let floor = await fetch('http://10.0.0.202:3000/floor?name=' + slug) 
+		var data = parseFloat(await floor.text())
+		if(isNaN(data)){
 			let collection = await get_collection(slug)
-			return collection.stats.floor_price
+			return collection.collection.stats.floor_price
 		}
-	  return parseFloat(await floor.text())
+	  return data
 	} catch(e){
 		console.log(e.message)
 		document.getElementById('body').style.background = 'lightsalmon'
