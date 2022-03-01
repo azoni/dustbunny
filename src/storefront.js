@@ -506,7 +506,7 @@ async function get_redis_bids(){
 		create_seaport()
 	}
 	try{
-		var redis_bids = await fetch('http://10.0.0.202:3000/redis_queue_pop') 
+		var redis_bids = await fetch('http://10.0.0.59:3000/redis_queue_pop') 
 	  redis_bids = await redis_bids.json() 
 	  for(let asset of redis_bids){
 	  	await sleep(document.getElementById('delay').value)
@@ -550,7 +550,7 @@ async function get_redis_floor(slug){
 }
 async function get_redis_length(){
 	try{
-		var length = await fetch('http://10.0.0.202:3000/length') 
+		var length = await fetch('http://10.0.0.59:3000/length') 
 	  return parseFloat(await length.text())
 	} catch(e){
 		console.log(e.message)
