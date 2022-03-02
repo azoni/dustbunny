@@ -586,10 +586,18 @@ var account_weth = 0
 var account_weth_temp = 0
 var first = 1
 async function print_weth_balances(){
-	document.getElementById('display_balances').innerHTML +='DustBunny_19 :<font color=red>' + (await get_weth_balance('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628')).toFixed(2) + '</font> | '
-	document.getElementById('display_balances').innerHTML +='DustBunny_20 :<font color=red>' + (await get_weth_balance('0x18a73AaEe970AF9A797D944A7B982502E1e71556')).toFixed(2) + '</font> | '
-	document.getElementById('display_balances').innerHTML +='DustBunny_21: <font color=red>' + (await get_weth_balance('0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A')).toFixed(2) + '</font> | '
-	document.getElementById('display_balances').innerHTML +='DustBunny_22: <font color=red>' + (await get_weth_balance('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF')).toFixed(2) + '</font>'
+	let total_weth = 0
+	document.getElementById('display_balances').innerHTML = ''
+	for(let index in bidding_wallets){
+		let weth = await get_weth_balance(bidding_wallets[index])
+		total_weth += weth
+		document.getElementById('display_balances').innerHTML +=wallet_names[index] + ' :<font color=red>' + weth.toFixed(2) + '</font> | '
+	}
+	// document.getElementById('display_balances').innerHTML +='DustBunny_19 :<font color=red>' + (await get_weth_balance('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628')).toFixed(2) + '</font> | '
+	// document.getElementById('display_balances').innerHTML +='DustBunny_20 :<font color=red>' + (await get_weth_balance('0x18a73AaEe970AF9A797D944A7B982502E1e71556')).toFixed(2) + '</font> | '
+	// document.getElementById('display_balances').innerHTML +='DustBunny_21: <font color=red>' + (await get_weth_balance('0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A')).toFixed(2) + '</font> | '
+	// document.getElementById('display_balances').innerHTML +='DustBunny_22: <font color=red>' + (await get_weth_balance('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF')).toFixed(2) + '</font>'
+	document.getElementById('display_balances').innerHTML +='Total: <font color=red>' + total_weth.toFixed(2) + '</font>'
 }
 print_weth_balances()
 async function get_account_weth(){
@@ -614,7 +622,7 @@ async function start_bids(address, user_data){
 	document.getElementById('body').style.background = 'lightgreen'
 	ADDRESS = address
 	get_account_weth()
-	document.getElementById('account_name').innerHTML = user_data + ' '
+	document.getElementById('account_name').innerHTML = user_data + ' ' + values.default.API_KEY
 	await sleep(1000)
 	reset()
 	start()
@@ -626,18 +634,29 @@ async function start_bids(address, user_data){
 // 	let display_name = values.default.START_ACCOUNT.username + '(' + display_account.substring((display_account.length - 6)) + ')'
 // 	start_bids(values.default.START_ACCOUNT.address, display_name)
 // }
+function account_change(a, n){
+	console.log('Changing accounts')
+	ADDRESS = a
+	let display_username  = n
+	let display_name = display_username + '(' + ADDRESS.substring((ADDRESS.length - 6)).toUpperCase() + ')'
+	document.getElementById('account_name').innerHTML = display_name + ' ' + values.default.API_KEY
+}
+document.getElementById('account1').innerHTML = wallet_names[0] + '(' + bidding_wallets[0].substring((ADDRESS.length - 6)).toUpperCase() + ')'
+document.getElementById('account2').innerHTML = wallet_names[1] + '(' + bidding_wallets[1].substring((ADDRESS.length - 6)).toUpperCase() + ')'
+document.getElementById('account3').innerHTML = wallet_names[2] + '(' + bidding_wallets[2].substring((ADDRESS.length - 6)).toUpperCase() + ')'
+// document.getElementById('account4').innerHTML = wallet_names[3] + '(' + bidding_wallets[3].substring((ADDRESS.length - 6)).toUpperCase() + ')'
 
-document.getElementById('competitor_bid22').addEventListener('click', function(){	
-	start_bids('0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', 'DustBunny_22(82E7DF) ')
+document.getElementById('account1').addEventListener('click', function(){	
+	account_change(bidding_wallets[0], wallet_names[0])
 })
-document.getElementById('competitor_bid21').addEventListener('click', function(){	
-	start_bids('0x1AEc9C6912D7Da7a35803f362db5ad38207D4b4A', 'DustBunny_21(7D4B4A) ')
+document.getElementById('account2').addEventListener('click', function(){	
+	account_change(bidding_wallets[1], wallet_names[1])
 })
-document.getElementById('competitor_bid20').addEventListener('click', function(){	
-	start_bids('0x18a73AaEe970AF9A797D944A7B982502E1e71556', 'DustBunny_20(E71556) ')
+document.getElementById('account3').addEventListener('click', function(){	
+	account_change(bidding_wallets[2], wallet_names[2])
 })
-document.getElementById('competitor_bid19').addEventListener('click', function(){	
-	start_bids('0x4d64bDb86C7B50D8B2935ab399511bA9433A3628', 'DustBunny_19(3A3628) ')
+document.getElementById('account4').addEventListener('click', function(){	
+	account_change(bidding_wallets[3], wallet_names[3])
 })
 
 var bid_total_value = 0
@@ -668,7 +687,7 @@ async function competitor_bid(asset){
 		get_account_weth()
 	}
 	let min_range = .6
-	let max_range = .85
+	let max_range = .8
 	let exp_time = .25
 	if(good_set.includes(asset.slug)){
 		max_range = .9
@@ -734,15 +753,15 @@ async function competitor_bid(asset){
 			await sleep(60000)
 		} else if (msg === 1){
 			document.getElementById('body').style.background = 'yellow'
-			if(getRandomInt(3) === 1){
-				let random_index = getRandomInt(3)
+			if(getRandomInt(bidding_wallets.length) === 1){
+				let random_index = getRandomInt(bidding_wallets.length)
 				console.log('Changing accounts')
 				ADDRESS = bidding_wallets[random_index]
 				let display_username  = wallet_names[random_index]
 				let display_name = display_username + '(' + ADDRESS.substring((ADDRESS.length - 6)).toUpperCase() + ')'
-				document.getElementById('account_name').innerHTML = display_name + ' '
+				document.getElementById('account_name').innerHTML = display_name + ' ' + values.default.API_KEY
 			}
-			await sleep(30000)
+			await sleep(15000)
 			return competitor_bid(asset)
 		}
 		await sleep(1000)
@@ -752,7 +771,7 @@ async function competitor_bid2(asset){
 	let fee = asset.fee
 	let floor = await get_redis_floor(asset.slug)
 	let min_range = .6
-	let max_range = .85
+	let max_range = .8
 	let exp_time = .25
 	if(good_set.includes(asset.slug)){
 		max_range = .9
@@ -816,7 +835,7 @@ async function competitor_bid2(asset){
 			await sleep(60000)
 		} else if (msg === 1){
 			document.getElementById('body').style.background = 'yellow'
-			await sleep(30000)
+			await sleep(15000)
 			return competitor_bid(asset)
 		}
 		await sleep(1000)
@@ -909,7 +928,7 @@ function timeToString(time) {
 }
 
 // Declare variables to use in our functions below
-document.getElementById('account_name').innerHTML += values.default.API_KEY
+// document.getElementById('account_name').innerHTML += values.default.API_KEY
 let startTime;
 let elapsedTime = 0;
 let timerInterval;
