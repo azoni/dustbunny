@@ -6,7 +6,6 @@ const opensea = require("opensea-js")
 const OpenSeaPort = opensea.OpenSeaPort;
 const Network = opensea.Network;
 const { WyvernSchemaName } = require('opensea-js/lib/types')
-
 const MnemonicWalletSubprovider = require("@0x/subproviders")
 .MnemonicWalletSubprovider;
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
@@ -497,7 +496,7 @@ document.getElementById('stop_run').addEventListener('click', function(){
 	text_area.innerHTML = ""
 	document.getElementById('stats').innerHTML = 'stats'
 })
-document.getElementById('delay').value = 250
+document.getElementById('delay').value = 0
 async function get_redis_bids(){
 	if(stop_run === 1){
 		return
@@ -506,7 +505,7 @@ async function get_redis_bids(){
 		create_seaport()
 	}
 	try{
-		var redis_bids = await fetch('http://10.0.0.59:3000/redis_queue_pop') 
+		let redis_bids = await fetch('http://10.0.0.59:3000/redis_queue_pop') 
 	  redis_bids = await redis_bids.json() 
 	  for(let asset of redis_bids){
 	  	await sleep(document.getElementById('delay').value)
@@ -514,13 +513,35 @@ async function get_redis_bids(){
   	}
   get_redis_bids()
 
-} catch(e){
-	console.log(e.message)
-	document.getElementById('body').style.background = 'lightsalmon'
-	await sleep(3000)
-	return get_redis_bids()
+	} catch(e){
+		console.log(e.message)
+		document.getElementById('body').style.background = 'lightsalmon'
+		await sleep(3000)
+		return get_redis_bids()
+	}
 }
-  
+async function get_redis_bids2(){
+	if(stop_run === 1){
+		return
+	}
+	if(values.default.ALCHEMY_KEY === undefined && bids_made % 1000 === 0 && bids_made !== 0){
+		create_seaport()
+	}
+	try{
+		let redis_bids = await fetch('http://10.0.0.59:3000/redis_queue_pop') 
+	  redis_bids = await redis_bids.json() 
+	  for(let asset of redis_bids){
+	  	await sleep(document.getElementById('delay').value)
+	  	await competitor_bid2(asset)
+  	}
+  get_redis_bids2()
+
+	} catch(e){
+		console.log(e.message)
+		document.getElementById('body').style.background = 'lightsalmon'
+		await sleep(3000)
+		return get_redis_bids2()
+	}
 }
 async function get_collection(slug){
   try{
@@ -594,11 +615,11 @@ async function start_bids(address, user_data){
 	ADDRESS = address
 	get_account_weth()
 	document.getElementById('account_name').innerHTML = user_data + ' '
-	await sleep(3000)
+	await sleep(1000)
 	reset()
 	start()
 	get_redis_bids()
-	get_redis_bids()
+	get_redis_bids2()
 }
 // if(values.default.START_ACCOUNT !== undefined){
 // 	let display_account = values.default.START_ACCOUNT.address
@@ -628,9 +649,9 @@ var bids_made_hour = 0
 var queue_length = 0
 var good_set = ['cool-cats-nft', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'nft-worlds', 'clonex', 'doodles-official', 'cyberkongz']
 async function competitor_bid(asset){
-	var fee = asset.fee
-	var floor = await get_redis_floor(asset.slug)
-	if(bids_made % 20 === 0 && bids_made !== 0){
+	let fee = asset.fee
+	let floor = await get_redis_floor(asset.slug)
+	if((bids_made % 20 === 0 || bids_made % 19 === 0) && bids_made !== 0){
 		queue_length = await get_redis_length()
 		text_area.innerHTML = ""
 		runtime = Math.floor(+new Date()/1000) - current_time
@@ -646,15 +667,15 @@ async function competitor_bid(asset){
 	if(bids_made % 100 === 0 && bids_made !== 0){
 		get_account_weth()
 	}
-	var min_range = .6
-	var max_range = .85
-	var exp_time = .25
+	let min_range = .6
+	let max_range = .85
+	let exp_time = .25
 	if(good_set.includes(asset.slug)){
 		max_range = .9
 	}
-	var min = floor * (min_range - fee)
-	var max = floor * (max_range - fee)
-	var top_bid = min
+	let min = floor * (min_range - fee)
+	let max = floor * (max_range - fee)
+	let top_bid = min
 	if(asset['expiration']){
 		exp_time = asset['expiration']
 	}
@@ -666,7 +687,7 @@ async function competitor_bid(asset){
 	} else {
 		top_bid = await get_top_bid_range_redis(asset, min, max)
 	}
-	var bid_amount = parseFloat(top_bid) + parseFloat(.002)
+	let bid_amount = parseFloat(top_bid) + parseFloat(.002)
 	if(top_bid === 'skip'){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ALREADY TOP BID, Max: " + max.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + "<br>"
 		await sleep(1000)
@@ -680,7 +701,7 @@ async function competitor_bid(asset){
 	if(top_bid < account_weth)
 	try{
 		await sleep(100)
-		var assets_data = {
+		let assets_data = {
 			tokenId: asset.token_id,
 			tokenAddress: asset.token_address,
     	}
@@ -708,19 +729,93 @@ async function competitor_bid(asset){
 		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '<br>'
 		console.log(e.message)
 		document.getElementById('body').style.background = 'pink'
-		var msg = check_errors(e.message)
+		let msg = check_errors(e.message)
 		if(msg === 0){
 			await sleep(60000)
 		} else if (msg === 1){
 			document.getElementById('body').style.background = 'yellow'
 			if(getRandomInt(3) === 1){
-				var random_index = getRandomInt(3)
+				let random_index = getRandomInt(3)
 				console.log('Changing accounts')
 				ADDRESS = bidding_wallets[random_index]
 				let display_username  = wallet_names[random_index]
 				let display_name = display_username + '(' + ADDRESS.substring((ADDRESS.length - 6)).toUpperCase() + ')'
 				document.getElementById('account_name').innerHTML = display_name + ' '
 			}
+			await sleep(30000)
+			return competitor_bid(asset)
+		}
+		await sleep(1000)
+	}
+}
+async function competitor_bid2(asset){
+	let fee = asset.fee
+	let floor = await get_redis_floor(asset.slug)
+	let min_range = .6
+	let max_range = .85
+	let exp_time = .25
+	if(good_set.includes(asset.slug)){
+		max_range = .9
+	}
+	let min = floor * (min_range - fee)
+	let max = floor * (max_range - fee)
+	let top_bid = min
+	if(asset['expiration']){
+		exp_time = asset['expiration']
+	}
+	if(asset['event_type']){
+		
+	}
+	if(asset['bid_amount']){
+		top_bid = asset['bid_amount']
+	} else {
+		top_bid = await get_top_bid_range_redis(asset, min, max)
+	}
+	let bid_amount = parseFloat(top_bid) + parseFloat(.002)
+	if(top_bid === 'skip'){
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ALREADY TOP BID, Max: " + max.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + "<br>"
+		await sleep(1000)
+		return
+	}
+	if(top_bid > max){
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " TOO HIGH: " + bid_amount.toFixed(3) + ' Max: ' + max.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + '<br>'
+		await sleep(1000)
+		return 
+	}
+	try{
+		await sleep(100)
+		let assets_data = {
+			tokenId: asset.token_id,
+			tokenAddress: asset.token_address,
+    	}
+		if (asset.slug === 'guttercatgang' || asset.slug === 'clonex-mintvial'){
+			assets_data = {
+				tokenId: asset.token_id,
+				tokenAddress: asset.token_address,
+				schemaName: WyvernSchemaName.ERC1155
+			}      
+		}
+		await seaport.createBuyOrder({
+			asset: assets_data,
+			startAmount: bid_amount,
+			accountAddress: ADDRESS,
+			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * exp_time),
+		})
+		bids_made += 1
+		bids_made_hour += 1
+		bid_total_value += bid_amount
+		
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " Bid: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> Exp: " + (60 * exp_time).toFixed(0) + ' min | type: ' + asset.event_type + "<br>"
+		document.getElementById('body').style.background = 'lightgreen'
+	} catch(e){
+		text_area.innerHTML += "Floor: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + " on <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '<br>'
+		console.log(e.message)
+		document.getElementById('body').style.background = 'pink'
+		let msg = check_errors(e.message)
+		if(msg === 0){
+			await sleep(60000)
+		} else if (msg === 1){
+			document.getElementById('body').style.background = 'yellow'
 			await sleep(30000)
 			return competitor_bid(asset)
 		}
@@ -814,7 +909,7 @@ function timeToString(time) {
 }
 
 // Declare variables to use in our functions below
-
+document.getElementById('account_name').innerHTML += values.default.API_KEY
 let startTime;
 let elapsedTime = 0;
 let timerInterval;
