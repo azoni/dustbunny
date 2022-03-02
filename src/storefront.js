@@ -554,7 +554,7 @@ async function get_collection(slug){
 // if error call await get_collection(slug) .stats.floor_price
 async function get_redis_floor(slug){
 	try{
-		let floor = await fetch('http://10.0.0.202:3000/floor?name=' + slug) 
+		let floor = await fetch('http://10.0.0.59:3000/floor?name=' + slug) 
 		var data = parseFloat(await floor.text())
 		if(isNaN(data)){
 			let collection = await get_collection(slug)
