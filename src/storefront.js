@@ -438,8 +438,8 @@ async function transfer(item){
 	})
 	console.log(transactionHash)
 }
-var bidding_wallets = ['0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', '0x18a73AaEe970AF9A797D944A7B982502E1e71556', '0x4d64bDb86C7B50D8B2935ab399511bA9433A3628']
-var wallet_names = ['DustBunny_22','DustBunny_20','DustBunny_19']
+var bidding_wallets = ['0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', '0x18a73AaEe970AF9A797D944A7B982502E1e71556']
+var wallet_names = ['DustBunny_22','DustBunny_20']
 for(let w in bidding_wallets){
 	bidding_wallets[w] = bidding_wallets[w].toLowerCase()
 }
@@ -643,7 +643,7 @@ function account_change(a, n){
 }
 document.getElementById('account1').innerHTML = wallet_names[0] + '(' + bidding_wallets[0].substring((ADDRESS.length - 6)).toUpperCase() + ')'
 document.getElementById('account2').innerHTML = wallet_names[1] + '(' + bidding_wallets[1].substring((ADDRESS.length - 6)).toUpperCase() + ')'
-document.getElementById('account3').innerHTML = wallet_names[2] + '(' + bidding_wallets[2].substring((ADDRESS.length - 6)).toUpperCase() + ')'
+// document.getElementById('account3').innerHTML = wallet_names[2] + '(' + bidding_wallets[2].substring((ADDRESS.length - 6)).toUpperCase() + ')'
 // document.getElementById('account4').innerHTML = wallet_names[3] + '(' + bidding_wallets[3].substring((ADDRESS.length - 6)).toUpperCase() + ')'
 
 document.getElementById('account1').addEventListener('click', function(){	
@@ -666,12 +666,13 @@ var runtime = 0
 var runtime_hour = 0
 var bids_made_hour = 0
 var queue_length = 0
+var medium_set = ['mfers']
 var good_set = ['cool-cats-nft', 'mutant-ape-yacht-club', 'bored-ape-kennel-club', 'azuki', 'nft-worlds', 'clonex', 'doodles-official', 'cyberkongz']
 async function competitor_bid(asset){
 	let fee = asset.fee
 	let floor = await get_redis_floor(asset.slug)
 	if((bids_made % 20 === 0 || bids_made % 19 === 0) && bids_made !== 0){
-		queue_length = await get_redis_length()
+		// queue_length = await get_redis_length()
 		text_area.innerHTML = ""
 		runtime = Math.floor(+new Date()/1000) - current_time
 		runtime_hour = Math.floor(+new Date()/1000) - current_time_hour
@@ -681,15 +682,18 @@ async function competitor_bid(asset){
 			bids_made_hour = 0
 			current_time_hour = Math.floor(+new Date()/1000)
 		}
-		get_gas()
+		// get_gas()
 	}
-	if(bids_made % 100 === 0 && bids_made !== 0){
-		get_account_weth()
-	}
+	// if(bids_made % 100 === 0 && bids_made !== 0){
+	// 	get_account_weth()
+	// }
 	let trait = ''
 	let min_range = .6
 	let max_range = .8
 	let exp_time = .25
+	if(medium_set.includes(asset.slug)){
+		max_range = .85
+	}
 	if(good_set.includes(asset.slug)){
 		max_range = .9
 	}
@@ -735,10 +739,14 @@ async function competitor_bid(asset){
 				schemaName: WyvernSchemaName.ERC1155
 			}      
 		}
+		// let account_index = 0
+		// if(bids_made % 2 === 0){
+		// 	account_index = 1
+		// }
 		await seaport.createBuyOrder({
 			asset: assets_data,
 			startAmount: bid_amount,
-			accountAddress: ADDRESS,
+			accountAddress: bidding_wallets[0],
 			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * exp_time),
 		})
 		bids_made += 1
@@ -823,10 +831,14 @@ async function competitor_bid2(asset){
 				schemaName: WyvernSchemaName.ERC1155
 			}      
 		}
+		// let account_index = 0
+		// if(bids_made % 2 === 0){
+		// 	account_index = 1
+		// }
 		await seaport.createBuyOrder({
 			asset: assets_data,
 			startAmount: bid_amount,
-			accountAddress: ADDRESS,
+			accountAddress: bidding_wallets[1],
 			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * exp_time),
 		})
 		bids_made += 1
