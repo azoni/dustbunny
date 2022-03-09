@@ -248,6 +248,7 @@ async function get_nfts(){
 					const asset = await seaport.api.getAsset({
 						tokenAddress: data.result[i].contractAddress,
 						tokenId: data.result[i].tokenID,
+						includeOrders: true,
 					})
 					if(asset.owner.address.toLowerCase() === values.default.OWNER_ADDRESS[account].address.toLowerCase() && hidden.includes(asset.collection.slug) === false){
 						// if(Object.keys(collections).includes(asset.collection.slug)){
@@ -329,7 +330,12 @@ async function display(){
 				}
 				
 				var curr_bid = 0
-
+				try{
+        	var listed_price = asset.sellOrders[0].basePrice/1000000000000000000
+        }catch(e){
+        	listed_price = '--'
+        	nodediv.style.backgroundcolor = '#e69138'
+        }
 				for(var bid in asset.buyOrders){
 	              try{
 	              	console.log('buy order')
@@ -344,12 +350,7 @@ async function display(){
 	                top_bid = curr_bid
 	              }        
 	            }
-	            try{
-	            	var listed_price = asset.sellOrders[0].basePrice/1000000000000000000
-	            }catch(e){
-	            	listed_price = '--'
-	            	nodediv.style.backgroundcolor = '#e69138'
-	            }
+	            
 	            try{
 	            	var last_sale = ' (' + (asset.lastSale.totalPrice/1000000000000000000).toFixed(3) + ')'
 	            } catch(e){
@@ -418,6 +419,7 @@ async function sell_order(item){
 			    },
 				accountAddress: item[3],
 				startAmount: document.getElementById(item[0]+item[1]).value,
+				expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * 72),
 			})
 			console.log(auction)
 		} catch(e) {
