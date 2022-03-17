@@ -467,14 +467,14 @@ async function get_top_bid_range_redis(a, min, max){
 		for(var bid of orders){
 			try{
 				if(bidding_wallets.includes(bid.makerAccount.address.toLowerCase()) && first === true && ((bid.expirationTime - (Math.floor(+new Date())/1000)) > 180)){
-					console.log(bid)
-					console.log(bid.expirationTime)
-					console.log(Math.floor(+new Date())/1000)
 					return 'skip'
 				} else {
 					first = false
 				}
 			}catch(e) {
+			}
+			if(bid.paymentTokenContract.symbol !== 'WETH'){
+				continue
 			}
 			var curr_bid = bid.basePrice/1000000000000000000
 			// if(curr_bid > max){
@@ -486,6 +486,7 @@ async function get_top_bid_range_redis(a, min, max){
 		}
 		return top_bid
 	} catch(e){
+			console.log('Get orders failed.')
 			console.log(e.message)
 			document.getElementById('body').style.background = 'orange'
 			await sleep(6000)
@@ -865,10 +866,14 @@ async function competitor_bid2(asset){
 		// if(bids_made % 2 === 0){
 		// 	account_index = 1
 		// }
+		let bidding_address = bidding_wallets[1]
+		if(bid_amount > 40){
+			bidding_address = bidding_wallets[0]
+		}
 		await seaport.createBuyOrder({
 			asset: assets_data,
 			startAmount: bid_amount,
-			accountAddress: bidding_wallets[1],
+			accountAddress: bidding_address,
 			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * exp_time),
 		})
 		bids_made += 1
@@ -903,6 +908,9 @@ function check_errors(msg){
     //alert('Insufficient balance. Please wrap more ETH.')
   }
   else if(msg.includes('Invalid JSON RPC response')){
+    return 'Invalid JSON RPC response'
+  }
+  else if(msg.includes('to fetch')){
     return 'Invalid JSON RPC response'
   }
   else if(msg.includes('Error: API Error 400: Order already exists')){
