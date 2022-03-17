@@ -539,6 +539,7 @@ async function get_redis_bids2(){
 	  redis_bids = await redis_bids.json() 
 	  for(let asset of redis_bids){
 	  	await sleep(document.getElementById('delay').value)
+		await sleep(500)
 	  	await competitor_bid2(asset)
   	}
   get_redis_bids2()
@@ -733,6 +734,7 @@ async function competitor_bid(asset){
 	if(asset['bid_amount']){
 		top_bid = asset['bid_amount']
 	} else {
+		await sleep(500)
 		top_bid = await get_top_bid_range_redis(asset, min, max)
 	} 
 	let bid_amount = parseFloat(top_bid) * 1.01
@@ -832,6 +834,7 @@ async function competitor_bid2(asset){
 	if(asset['bid_amount']){
 		top_bid = asset['bid_amount']
 	} else {
+		await sleep(500)
 		top_bid = await get_top_bid_range_redis(asset, min, max)
 	}
 
