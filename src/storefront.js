@@ -715,6 +715,9 @@ async function competitor_bid(asset){
 		} else if(asset['tier'] === 'high'){
 			min_range = .71
 			max_range = .91
+		} else if(asset['tier'] === 'medium-low'){
+			min_range = .685
+			max_range = .835
 		}
 	}
 	if(asset['bid_range']){
