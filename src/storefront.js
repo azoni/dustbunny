@@ -739,13 +739,16 @@ async function competitor_bid(asset){
 		top_bid = await get_top_bid_range_redis(asset, min, max)
 	} 
 	let bid_amount = parseFloat(top_bid) * 1.01
+	if(bid_amount > max){
+		bid_amount = max
+	}
 	if(top_bid === 'skip'){
 		text_area.innerHTML += "<font color=brown>Flr: " + floor.toFixed(2) + " ALREADY TOP, Max: " + max.toFixed(3) + ", " + trait + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + "</font><br>"
 		await sleep(1000)
 		return
 	}
 	if(top_bid > max){
-		text_area.innerHTML += "<font color=purple>Flr: " + floor.toFixed(2) + " TOO HIGH: "+ " Fee: " + (fee*100).toFixed() + "% Bid: " + bid_amount.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ", " + trait + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + '</font><br>'
+		text_area.innerHTML += "<font color=purple>Flr: " + floor.toFixed(2) + " TOO HIGH: "+ " Fee: " + (fee*100).toFixed() + "% Bid: " + top_bid.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ", " + trait + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + '</font><br>'
 		await sleep(1000)
 		return 
 	}
@@ -776,7 +779,7 @@ async function competitor_bid(asset){
 		bid_total_value += bid_amount
 		
 		document.getElementById('stats').innerHTML = "Bids: " + bids_made  + ' | BPM: ' + bpm.toFixed() + " | BPM_H: " + bpm_hour.toFixed() + " | Bid Total Value: " + bid_total_value.toFixed(2) + ' | Avg bid: ' + (bid_total_value/bids_made).toFixed(2) + ' | Queue size: ' + queue_length
-		text_area.innerHTML += "Flr: " + floor.toFixed(2) + " Fee: " + (fee*100).toFixed() + "% Bid: " + bid_amount.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> Exp: " + (60 * exp_time).toFixed(0) + ' min | ' + asset.event_type + "<br>"
+		text_area.innerHTML += "Fl: " + floor.toFixed(2) + " " + (fee*100).toFixed() + "% Bid: " + bid_amount.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> " + (60 * exp_time).toFixed(0) + ' min | ' + asset.event_type + "<br>"
 		document.getElementById('body').style.background = 'lightgreen'
 	} catch(e){
 		text_area.innerHTML += "<font color=red>Flr: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + ", " + trait + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '</font><br>'
@@ -789,6 +792,7 @@ async function competitor_bid(asset){
 			await sleep(60000)
 		} else if (msg === 1){
 			document.getElementById('body').style.background = 'yellow'
+			console.log('1')
 			if(getRandomInt(bidding_wallets.length) === 1){
 				let random_index = getRandomInt(bidding_wallets.length)
 				console.log('Changing accounts')
@@ -843,13 +847,16 @@ async function competitor_bid2(asset){
 	}
 
 	let bid_amount = parseFloat(top_bid) * 1.01
+	if(bid_amount > max){
+		bid_amount = max
+	}
 	if(top_bid === 'skip'){
 		text_area.innerHTML += "<font color=brown>Flr: " + floor.toFixed(2) + " ALREADY TOP, Max: " + max.toFixed(3) + ", " + trait + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + "</font><br>"
 		await sleep(1000)
 		return
 	}
 	if(top_bid > max){
-		text_area.innerHTML += "<font color=purple>Flr: " + floor.toFixed(2) + " TOO HIGH: " + " Fee: " + (fee*100).toFixed() + "% Bid: " + bid_amount.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ", " + trait + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + '</font><br>'
+		text_area.innerHTML += "<font color=purple>Flr: " + floor.toFixed(2) + " TOO HIGH: " + " Fee: " + (fee*100).toFixed() + "% Bid: " + top_bid.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ", " + trait + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + '</font><br>'
 		await sleep(1000)
 		return 
 	}
@@ -883,7 +890,7 @@ async function competitor_bid2(asset){
 		bids_made_hour += 1
 		bid_total_value += bid_amount
 		
-		text_area.innerHTML += "Flr: " + floor.toFixed(2) + " Fee: " + (fee*100).toFixed() + "% Bid: " + bid_amount.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> Exp: " + (60 * exp_time).toFixed(0) + ' min | ' + asset.event_type + "<br>"
+		text_area.innerHTML += "Fl: " + floor.toFixed(2) + " " + (fee*100).toFixed() + "% Bid: " + bid_amount.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> " + (60 * exp_time).toFixed(0) + ' min | ' + asset.event_type + "<br>"
 		document.getElementById('body').style.background = 'lightgreen'
 	} catch(e){
 		text_area.innerHTML += "<font color=red>Flr: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + ", " + trait + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '</font><br>'
@@ -896,6 +903,7 @@ async function competitor_bid2(asset){
 			await sleep(60000)
 		} else if (msg === 1){
 			document.getElementById('body').style.background = 'yellow'
+			console.log('2 ' + asset['slug'])
 			await sleep(15000)
 			return competitor_bid(asset)
 		}
