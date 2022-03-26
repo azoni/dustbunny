@@ -770,7 +770,7 @@ async function competitor_bid(asset){
 			tokenId: asset.token_id,
 			tokenAddress: asset.token_address,
     	}
-		if (asset.slug === 'guttercatgang' || asset.slug === 'clonex-mintvial' || asset.slug === 'gutterrats' || asset.slug === 'gutterdogs'){
+		if (asset.slug === 'guttercatgang' || asset.slug === 'clonex-mintvial' || asset.slug === 'gutterrats'){
 			assets_data = {
 				tokenId: asset.token_id,
 				tokenAddress: asset.token_address,
@@ -878,7 +878,7 @@ async function competitor_bid2(asset){
 			tokenId: asset.token_id,
 			tokenAddress: asset.token_address,
     	}
-		if (asset.slug === 'guttercatgang' || asset.slug === 'clonex-mintvial' || asset.slug === 'gutterrats' || asset.slug === 'gutterdogs'){
+		if (asset.slug === 'guttercatgang' || asset.slug === 'clonex-mintvial' || asset.slug === 'gutterrats'){
 			assets_data = {
 				tokenId: asset.token_id,
 				tokenAddress: asset.token_address,
