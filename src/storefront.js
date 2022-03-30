@@ -683,12 +683,19 @@ var runtime_hour = 0
 var bids_made_hour = 0
 var queue_length = 0
 var calls = 0
+var skip_list = []
 async function competitor_bid(asset){
+	if(skip_list.includes(asset.slug + asset.token_id)){
+		return
+	}
 	let collection_data = await get_redis_floor(asset.slug)
 	let floor = collection_data.floor_price
 	let fee = collection_data.dev_seller_fee_basis_points/10000
 	calls += 1
-	if((calls === 10) && bids_made !== 0){
+	if((calls > 9) && bids_made !== 0){
+		if(calls % 15000 === 0){
+			skip_list = []
+		}
 		calls = 0
 		// queue_length = await get_redis_length()
 		text_area.innerHTML = ""
@@ -749,7 +756,7 @@ async function competitor_bid(asset){
 			await sleep(1000)
 			return
 		}
-		if(top_bid > max){
+		if(top_bid > max && !asset['bypass_max']){
 			text_area.innerHTML += "<font color=purple>Flr: " + floor.toFixed(2) + " TOO HIGH: "+ " Fee: " + (fee*100).toFixed(1) + "% Bid: " + top_bid.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ", " + trait + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + '</font><br>'
 			await sleep(1000)
 			return 
@@ -781,10 +788,14 @@ async function competitor_bid(asset){
 		// if(bids_made % 2 === 0){
 		// 	account_index = 1
 		// }
+		let bidding_address = bidding_wallets[0]
+		if(asset['bidding_adress']){
+			bidding_address = asset['bidding_adress']
+		}
 		await seaport.createBuyOrder({
 			asset: assets_data,
 			startAmount: bid_amount,
-			accountAddress: bidding_wallets[0],
+			accountAddress: bidding_address,
 			expirationTime: Math.round(Date.now() / 1000 + 60 * 60 * exp_time),
 		})
 		bids_made += 1
@@ -798,7 +809,7 @@ async function competitor_bid(asset){
 		text_area.innerHTML += "<font color=red>Flr: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + ", " + trait + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '</font><br>'
 		console.log(e.message)
 		document.getElementById('body').style.background = 'pink'
-		let msg = check_errors(e.message)
+		let msg = check_errors(e.message, asset)
 		if(msg === 0){
 			console.log('an error has occured---')
 			console.log(e.message)
@@ -806,14 +817,6 @@ async function competitor_bid(asset){
 		} else if (msg === 1){
 			document.getElementById('body').style.background = 'yellow'
 			console.log('1')
-			if(getRandomInt(bidding_wallets.length) === 1){
-				let random_index = getRandomInt(bidding_wallets.length)
-				console.log('Changing accounts')
-				ADDRESS = bidding_wallets[random_index]
-				let display_username  = wallet_names[random_index]
-				let display_name = display_username + '(' + ADDRESS.substring((ADDRESS.length - 6)).toUpperCase() + ')'
-				document.getElementById('account_name').innerHTML = display_name + ' ' + values.default.API_KEY
-			}
 			await sleep(15000)
 			return competitor_bid(asset)
 		}
@@ -821,6 +824,9 @@ async function competitor_bid(asset){
 	}
 }
 async function competitor_bid2(asset){
+	if(skip_list.includes(asset.slug + asset.token_id)){
+		return
+	}
 	let trait = ''
 	let collection_data = await get_redis_floor(asset.slug)
 	let floor = collection_data.floor_price
@@ -868,7 +874,7 @@ async function competitor_bid2(asset){
 		await sleep(1000)
 		return
 	}
-	if(top_bid > max){
+	if(top_bid > max && !asset['bypass_max']){
 		text_area.innerHTML += "<font color=purple>Flr: " + floor.toFixed(2) + " TOO HIGH: " + " Fee: " + (fee*100).toFixed(1) + "% Bid: " + top_bid.toFixed(3) + ", " + trait + ' ' + (bid_amount/floor).toFixed(2) + ' ' + min_range + '-' + max_range + ' Max: ' + max.toFixed(3) + ", " + trait + ' Profit: ' + (floor*(1-(fee+.025)) - bid_amount).toFixed(3) + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + ' ' + asset.token_id + "</a> type: " + asset.event_type + '</font><br>'
 		await sleep(1000)
 		return 
@@ -893,6 +899,9 @@ async function competitor_bid2(asset){
 		if(bid_amount > 40){
 			bidding_address = bidding_wallets[0]
 		}
+		if(asset['bidding_adress']){
+			bidding_address = asset['bidding_adress']
+		}
 		await seaport.createBuyOrder({
 			asset: assets_data,
 			startAmount: bid_amount,
@@ -909,7 +918,7 @@ async function competitor_bid2(asset){
 		text_area.innerHTML += "<font color=red>Flr: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + ", " + trait + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '</font><br>'
 		console.log(e.message)
 		document.getElementById('body').style.background = 'pink'
-		let msg = check_errors(e.message)
+		let msg = check_errors(e.message, asset)
 		if(msg === 0){
 			console.log('an error has occured---')
 			console.log(e.message)
@@ -926,32 +935,42 @@ async function competitor_bid2(asset){
 function getRandomInt(max) {
 	return Math.floor(Math.random() * max);
 }
-function check_errors(msg){
+function check_errors(msg, asset){
   if(msg.includes('Insufficient balance.')){
     return 'Insufficient balance. Please wrap more ETH.'
     //alert('Insufficient balance. Please wrap more ETH.')
   }
   else if(msg.includes('Invalid JSON RPC response')){
+		skip_list.push(asset.slug + asset.token_id)
+		console.log(skip_list)
     return 'Invalid JSON RPC response'
   }
   else if(msg.includes('to fetch')){
     return 'Invalid JSON RPC response'
   }
-  else if(msg.includes('Error: API Error 400: Order already exists')){
+  else if(msg.includes('API Error 400: Order already exists')){
+		skip_list.push(asset.slug + asset.token_id)
+		console.log(skip_list)
     return 'Error: API Error 400: Order already exists'
   }
   else if(msg.includes('This order does not have a valid bid price for the auction')){
+		skip_list.push(asset.slug + asset.token_id)
+		console.log(skip_list)
     return 'Auction'
   }
   else if(msg.includes('API Error 404: Not found.')){
     return 'Asset not found.'
   } else if(msg.includes('Trading is not enabled for')){
-    return 'Trading not enalbed on asset.'
+		skip_list.push(asset.slug + asset.token_id)
+		console.log(skip_list)
+    return 'Trading not enabled on asset.'
   } else if(msg.includes('Internal server error')){
     return 'Internal server error.'
   } else if(msg.includes('too many existing orders.') || msg.includes('has too many outstanding orders.') || msg.includes('Outstanding order to wallet balance')){
     return 1
   } else if(msg.includes('Bid amount is not 5.0% higher than the previous bid')){
+		skip_list.push(asset.slug + asset.token_id)
+		console.log(skip_list)
     return 'Bid amount is not 5.0% higher than the previous bid'
   } else if(msg.includes('Cannot read properties of undefined')){
       return "Cannot read properties of undefined"
