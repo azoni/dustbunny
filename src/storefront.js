@@ -443,8 +443,8 @@ async function transfer(item){
 	})
 	console.log(transactionHash)
 }
-var bidding_wallets = ['0x35C25Ff925A61399a3B69e8C95C9487A1d82E7DF', '0x18a73AaEe970AF9A797D944A7B982502E1e71556']
-var wallet_names = ['DustBunny_22','DustBunny_20']
+var bidding_wallets = ['0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25']
+var wallet_names = ['DustBunny','DustBunny']
 for(let w in bidding_wallets){
 	bidding_wallets[w] = bidding_wallets[w].toLowerCase()
 }
@@ -807,7 +807,7 @@ async function competitor_bid(asset){
 		document.getElementById('body').style.background = 'lightgreen'
 	} catch(e){
 		text_area.innerHTML += "<font color=red>Flr: " + floor.toFixed(2) + " ERROR: " + bid_amount.toFixed(3) + ", " + trait + " <a href=https://opensea.io/assets/" + asset.token_address + '/' + asset.token_id + " target=_blank>" + asset.slug + "</a> " + asset.token_id + ' type: ' + asset.event_type + '</font><br>'
-		console.log(e.message)
+		console.log(e)
 		document.getElementById('body').style.background = 'pink'
 		let msg = check_errors(e.message, asset)
 		if(msg === 0){
