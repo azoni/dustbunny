@@ -443,8 +443,8 @@ async function transfer(item){
 	})
 	console.log(transactionHash)
 }
-var bidding_wallets = ['0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', '0xB1CbED4ab864e9215206cc88C5F758fda4E01E25']
-var wallet_names = ['DustBunny','DustBunny']
+var bidding_wallets = ['0xB1CbED4ab864e9215206cc88C5F758fda4E01E25', '0x763be576919a0d32b9e7ebDaF5a858195E04A6Cb']
+var wallet_names = ['DustBunny','DustBunny_18']
 for(let w in bidding_wallets){
 	bidding_wallets[w] = bidding_wallets[w].toLowerCase()
 }
