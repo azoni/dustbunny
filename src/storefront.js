@@ -741,8 +741,8 @@ async function competitor_bid(asset){
 	if(asset['trait']){
 		trait = asset['trait']
 	}
-	const retrieved_offer = await seaport.api.get(`/api/v1/asset/${asset.token_address}/${asset.token_id}/offers`)
-	console.log(retrieved_offer)
+	// const retrieved_offer = await seaport.api.get(`/api/v1/asset/${asset.token_address}/${asset.token_id}/offers`)
+	// console.log(retrieved_offer)
 	if(asset['bid_amount']){
 		top_bid = asset['bid_amount']
 	} else {
